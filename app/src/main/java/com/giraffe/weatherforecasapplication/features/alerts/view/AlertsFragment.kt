@@ -6,9 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
 import com.giraffe.weatherforecasapplication.databinding.FragmentAlertsBinding
 import com.giraffe.weatherforecasapplication.features.alerts.viewmodel.AlertsVM
-import com.giraffe.weatherforecasapplication.features.home.viewmodel.HomeVM
+import com.giraffe.weatherforecasapplication.model.repo.Repo
+import com.giraffe.weatherforecasapplication.network.ApiClient
+import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
 
 class AlertsFragment : Fragment() {
     companion object {
@@ -17,8 +20,10 @@ class AlertsFragment : Fragment() {
 
     private lateinit var binding: FragmentAlertsBinding
     private lateinit var viewModel: AlertsVM
+    private lateinit var factory: ViewModelFactory
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        factory = ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
         viewModel = ViewModelProvider(this)[AlertsVM::class.java]
     }
 

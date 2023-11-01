@@ -6,9 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
 import com.giraffe.weatherforecasapplication.databinding.FragmentFavoritesBinding
-import com.giraffe.weatherforecasapplication.features.alerts.viewmodel.AlertsVM
 import com.giraffe.weatherforecasapplication.features.favorites.viewmodel.FavoritesVM
+import com.giraffe.weatherforecasapplication.model.repo.Repo
+import com.giraffe.weatherforecasapplication.network.ApiClient
+import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
 
 class FavoritesFragment : Fragment() {
     companion object {
@@ -17,9 +20,11 @@ class FavoritesFragment : Fragment() {
 
     private lateinit var binding: FragmentFavoritesBinding
     private lateinit var viewModel: FavoritesVM
+    private lateinit var factory: ViewModelFactory
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[FavoritesVM::class.java]
+        factory = ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
+        viewModel = ViewModelProvider(this, factory)[FavoritesVM::class.java]
     }
 
     override fun onCreateView(

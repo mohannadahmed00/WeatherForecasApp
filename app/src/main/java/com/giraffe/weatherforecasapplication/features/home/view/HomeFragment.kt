@@ -6,8 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
 import com.giraffe.weatherforecasapplication.databinding.FragmentHomeBinding
 import com.giraffe.weatherforecasapplication.features.home.viewmodel.HomeVM
+import com.giraffe.weatherforecasapplication.model.repo.Repo
+import com.giraffe.weatherforecasapplication.network.ApiClient
+import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
 
 class HomeFragment : Fragment() {
     companion object {
@@ -16,9 +20,11 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var viewModel: HomeVM
+    private lateinit var factory: ViewModelFactory
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[HomeVM::class.java]
+        factory = ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
+        viewModel = ViewModelProvider(this, factory)[HomeVM::class.java]
     }
 
     override fun onCreateView(

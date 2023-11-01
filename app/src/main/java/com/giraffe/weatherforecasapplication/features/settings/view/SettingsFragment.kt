@@ -6,9 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
 import com.giraffe.weatherforecasapplication.databinding.FragmentSettingsBinding
-import com.giraffe.weatherforecasapplication.features.favorites.viewmodel.FavoritesVM
 import com.giraffe.weatherforecasapplication.features.settings.viewmodel.SettingsVM
+import com.giraffe.weatherforecasapplication.model.repo.Repo
+import com.giraffe.weatherforecasapplication.network.ApiClient
+import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
 
 class SettingsFragment : Fragment() {
     companion object {
@@ -17,8 +20,10 @@ class SettingsFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingsBinding
     private lateinit var viewModel: SettingsVM
+    private lateinit var factory: ViewModelFactory
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        factory = ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
         viewModel = ViewModelProvider(this)[SettingsVM::class.java]
     }
 
