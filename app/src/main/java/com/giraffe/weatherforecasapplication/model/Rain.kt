@@ -1,4 +1,5 @@
 package com.giraffe.weatherforecasapplication.model
 
-interface RepoInterface {
-}
+data class Rain(
+    val `1h`: Double
+)

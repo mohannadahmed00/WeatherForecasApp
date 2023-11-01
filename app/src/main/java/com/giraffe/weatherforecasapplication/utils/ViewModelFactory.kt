@@ -6,7 +6,7 @@ import com.giraffe.weatherforecasapplication.features.alerts.viewmodel.AlertsVM
 import com.giraffe.weatherforecasapplication.features.favorites.viewmodel.FavoritesVM
 import com.giraffe.weatherforecasapplication.features.home.viewmodel.HomeVM
 import com.giraffe.weatherforecasapplication.features.settings.viewmodel.SettingsVM
-import com.giraffe.weatherforecasapplication.model.RepoInterface
+import com.giraffe.weatherforecasapplication.model.repo.RepoInterface
 
 
 class ViewModelFactory(private val repo: RepoInterface) : ViewModelProvider.Factory {
