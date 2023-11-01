@@ -1,10 +1,12 @@
 package com.giraffe.weatherforecasapplication.database
 
 import android.content.Context
+import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.giraffe.weatherforecasapplication.model.ForecastModel
 
-//@Database(entities = [ProductDTO::class], version = 1)
+@Database(entities = [ForecastModel::class], version = 1)
 abstract class AppDataBase : RoomDatabase() {
     abstract fun getFavoritesDao(): FavoritesDao
     companion object {
