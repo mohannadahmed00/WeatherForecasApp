@@ -24,7 +24,7 @@ class AlertsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         factory = ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
-        viewModel = ViewModelProvider(this)[AlertsVM::class.java]
+        viewModel = ViewModelProvider(this,factory)[AlertsVM::class.java]
     }
 
     override fun onCreateView(

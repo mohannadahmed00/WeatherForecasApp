@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-parcelize")
     id("kotlin-kapt")
+    id("androidx.navigation.safeargs")
 }
 
 android {
@@ -69,4 +70,8 @@ dependencies {
 
     //viewModelLifeScope
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+
+    //navigation
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
 }

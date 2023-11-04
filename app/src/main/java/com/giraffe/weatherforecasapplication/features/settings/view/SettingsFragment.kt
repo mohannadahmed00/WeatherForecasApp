@@ -24,7 +24,7 @@ class SettingsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         factory = ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
-        viewModel = ViewModelProvider(this)[SettingsVM::class.java]
+        viewModel = ViewModelProvider(this,factory)[SettingsVM::class.java]
     }
 
     override fun onCreateView(

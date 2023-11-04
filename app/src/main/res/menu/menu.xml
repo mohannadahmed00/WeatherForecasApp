@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/homeFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/home_ic"
+            android:title="@string/home" />
+        <item
+            android:id="@+id/favoritesFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/favorite_ic"
+            android:title="@string/favorites" />
+        <item
+            android:id="@+id/alertsFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/alert_active_ic"
+            android:title="@string/alerts" />
+        <item
+            android:id="@+id/settingsFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/settings_ic"
+            android:title="@string/settings" />
+    </group>
+</menu>
