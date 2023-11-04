@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
 import com.giraffe.weatherforecasapplication.databinding.FragmentHomeBinding
 import com.giraffe.weatherforecasapplication.features.home.viewmodel.HomeVM
+import com.giraffe.weatherforecasapplication.model.ForecastModel
 import com.giraffe.weatherforecasapplication.model.repo.Repo
 import com.giraffe.weatherforecasapplication.network.ApiClient
 import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
@@ -21,10 +22,13 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var viewModel: HomeVM
     private lateinit var factory: ViewModelFactory
+
+    private var forecastModel:ForecastModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         factory = ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
         viewModel = ViewModelProvider(this, factory)[HomeVM::class.java]
+        viewModel.getForecast()
     }
 
     override fun onCreateView(
@@ -34,4 +38,22 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.textView.setOnClickListener {
+            forecastModel?.let {
+                viewModel.insertForecast(it)
+            }
+        }
+        viewModel.forecast.observe(viewLifecycleOwner) {
+            if(it.isSuccessful) {
+                forecastModel = it.body()
+                binding.textView.text = it.body().toString()
+            }else{
+                binding.textView.text = it.message()
+            }
+        }
+
+    }
+
 }

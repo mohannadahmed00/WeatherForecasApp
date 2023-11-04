@@ -1,6 +1,7 @@
 package com.giraffe.weatherforecasapplication.model.repo
 
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
+import com.giraffe.weatherforecasapplication.model.ForecastModel
 import com.giraffe.weatherforecasapplication.network.RemoteSource
 
 class Repo private constructor(private val remoteSource: RemoteSource,private val localSource: ConcreteLocalSource):RepoInterface {
@@ -15,4 +16,9 @@ class Repo private constructor(private val remoteSource: RemoteSource,private va
             }
         }
     }
+
+    override suspend fun getForecast(lat: Int, lon: Int) = remoteSource.getForecast(lat, lon)
+    override suspend fun insertForecast(forecast: ForecastModel) = localSource.insertForecast(forecast)
+    override suspend fun deleteAllForecasts() = localSource.deleteAllForecasts()
+
 }

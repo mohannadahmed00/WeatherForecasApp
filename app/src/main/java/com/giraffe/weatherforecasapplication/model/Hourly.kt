@@ -1,19 +1,19 @@
 package com.giraffe.weatherforecasapplication.model
 
 data class Hourly(
-    val clouds: Int,
+    val clouds: Double,
     val dew_point: Double,
-    val dt: Int,
+    val dt: Double,
     val feels_like: Double,
-    val humidity: Int,
+    val humidity: Double,
     val pop: Double,
-    val pressure: Int,
+    val pressure: Double,
     val rain: Rain,
     val temp: Double,
     val uvi: Double,
-    val visibility: Int,
+    val visibility: Double,
     val weather: List<Weather>,
-    val wind_deg: Int,
+    val wind_deg: Double,
     val wind_gust: Double,
     val wind_speed: Double
 )

@@ -1,19 +1,19 @@
 package com.giraffe.weatherforecasapplication.model
 
 data class Current(
-    val clouds: Int,
+    val clouds: Double,
     val dew_point: Double,
-    val dt: Int,
+    val dt: Double,
     val feels_like: Double,
-    val humidity: Int,
-    val pressure: Int,
-    val sunrise: Int,
-    val sunset: Int,
+    val humidity: Double,
+    val pressure: Double,
+    val sunrise: Double,
+    val sunset: Double,
     val temp: Double,
-    val uvi: Int,
-    val visibility: Int,
+    val uvi: Double,
+    val visibility: Double,
     val weather: List<Weather>,
-    val wind_deg: Int,
+    val wind_deg: Double,
     val wind_gust: Double,
     val wind_speed: Double
 )

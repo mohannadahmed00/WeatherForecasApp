@@ -1,6 +1,6 @@
 package com.giraffe.weatherforecasapplication.model
 
 data class Minutely(
-    val dt: Int,
-    val precipitation: Int
+    val dt: Double,
+    val precipitation: Double
 )
