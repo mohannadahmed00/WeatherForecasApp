@@ -8,7 +8,11 @@
         android:id="@+id/homeFragment"
         android:name="com.giraffe.weatherforecasapplication.features.home.view.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
     <fragment
         android:id="@+id/favoritesFragment"
         android:name="com.giraffe.weatherforecasapplication.features.favorites.view.FavoritesFragment"
@@ -24,4 +28,9 @@
         android:name="com.giraffe.weatherforecasapplication.features.settings.view.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.giraffe.weatherforecasapplication.features.map.view.MapFragment"
+        android:label="fragment_map"
+        tools:layout="@layout/fragment_map" />
 </navigation>

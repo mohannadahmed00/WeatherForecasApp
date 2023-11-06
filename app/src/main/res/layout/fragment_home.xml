@@ -5,8 +5,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:fitsSystemWindows="true"
     tools:context=".features.home.view.HomeFragment">
 
+    <ImageView
+        android:id="@+id/iv_more"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_margin="8dp"
+        android:src="@drawable/more_ic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/red" />
+
+    <ImageView
+        android:id="@+id/iv_location"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_margin="8dp"
+        android:src="@drawable/location_ic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/red" />
+
+    <ImageView
+        android:id="@+id/iv_favorite"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_margin="8dp"
+        android:src="@drawable/favorite_ic"
+        app:layout_constraintEnd_toStartOf="@id/iv_location"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/gray" />
 
 
     <androidx.cardview.widget.CardView
@@ -18,7 +48,7 @@
         app:cardCornerRadius="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/iv_more">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -224,28 +254,26 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_hourly"
         android:layout_width="0dp"
-        tools:itemCount="24"
-        tools:listitem="@layout/hourly_item"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/tv_uv"/>
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_uv"
+        tools:itemCount="24"
+        tools:listitem="@layout/hourly_item" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_daily"
         android:layout_width="0dp"
-        tools:listitem="@layout/daily_item"
         android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/rv_hourly"/>
-
-
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rv_hourly"
+        tools:listitem="@layout/daily_item" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
