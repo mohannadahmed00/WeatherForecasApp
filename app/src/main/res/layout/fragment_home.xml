@@ -4,75 +4,95 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue"
+    android:background="@color/white"
     tools:context=".features.home.view.HomeFragment">
 
-    <TextView
-        android:id="@+id/tv_zone"
-        style="@style/text_withe_30"
-        android:layout_width="wrap_content"
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view_1"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:layout_margin="8dp"
+        android:backgroundTint="@color/blue"
+        app:cardCornerRadius="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="cairo" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/tv_current_temp"
-        style="@style/text_withe_bold_60"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_zone"
-        tools:text="37°C" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/iv_current"
-        android:layout_width="50dp"
-        android:layout_height="0dp"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@id/tv_current_des"
-        app:layout_constraintEnd_toStartOf="@id/tv_current_des"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_current_des"
-        tools:src="@drawable/sun" />
+            <TextView
+                android:id="@+id/tv_zone"
+                style="@style/text_withe_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="cairo" />
 
-    <TextView
-        android:id="@+id/tv_current_des"
-        style="@style/text_withe_30"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/iv_current"
-        app:layout_constraintTop_toBottomOf="@id/tv_current_temp"
-        tools:text="clear" />
+            <TextView
+                android:id="@+id/tv_current_temp"
+                style="@style/text_withe_bold_60"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_zone"
+                tools:text="37°C" />
 
-    <TextView
-        android:id="@+id/tv_current_time_date"
-        style="@style/text_withe_20"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_current_des"
-        tools:text="Sunday, Nov 5, 2023" />
+            <ImageView
+                android:id="@+id/iv_current"
+                android:layout_width="50dp"
+                android:layout_height="0dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="@id/tv_current_des"
+                app:layout_constraintEnd_toStartOf="@id/tv_current_des"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_current_des"
+                tools:src="@drawable/sun" />
+
+            <TextView
+                android:id="@+id/tv_current_des"
+                style="@style/text_withe_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iv_current"
+                app:layout_constraintTop_toBottomOf="@id/tv_current_temp"
+                tools:text="clear" />
+
+            <TextView
+                android:id="@+id/tv_current_time_date"
+                style="@style/text_withe_20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_current_des"
+                tools:text="Sunday, Nov 5, 2023" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
 
     <ImageView
         android:id="@+id/iv_wind"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="8dp"
         android:src="@drawable/wind_ic"
         app:layout_constraintEnd_toStartOf="@id/iv_humidity"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_current_time_date"
-        app:tint="@color/dark_blue" />
+        app:layout_constraintTop_toBottomOf="@id/card_view_1"
+        app:tint="@color/red" />
 
     <ImageView
         android:id="@+id/iv_humidity"
@@ -83,7 +103,7 @@
         app:layout_constraintEnd_toStartOf="@id/iv_pressure"
         app:layout_constraintStart_toEndOf="@id/iv_wind"
         app:layout_constraintTop_toTopOf="@+id/iv_wind"
-        app:tint="@color/dark_blue" />
+        app:tint="@color/blue" />
 
     <ImageView
         android:id="@+id/iv_pressure"
@@ -94,7 +114,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_humidity"
         app:layout_constraintTop_toTopOf="@+id/iv_humidity"
-        app:tint="@color/dark_blue" />
+        app:tint="@color/green" />
 
 
     <ImageView
@@ -106,7 +126,7 @@
         app:layout_constraintEnd_toEndOf="@+id/iv_wind"
         app:layout_constraintStart_toStartOf="@+id/iv_wind"
         app:layout_constraintTop_toBottomOf="@id/tv_wind"
-        app:tint="@color/dark_blue" />
+        app:tint="@color/yellow" />
 
     <ImageView
         android:id="@+id/iv_cloudiness"
@@ -128,35 +148,38 @@
         app:layout_constraintEnd_toEndOf="@id/iv_pressure"
         app:layout_constraintStart_toStartOf="@+id/iv_pressure"
         app:layout_constraintTop_toTopOf="@+id/iv_cloudiness"
-        app:tint="@color/dark_blue" />
+        app:tint="@color/rose_quartz" />
 
 
     <TextView
         android:id="@+id/tv_wind"
+        style="@style/text_withe_bold_16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/red"
         app:layout_constraintEnd_toEndOf="@+id/iv_wind"
         app:layout_constraintStart_toStartOf="@+id/iv_wind"
         app:layout_constraintTop_toBottomOf="@id/iv_wind"
-        style="@style/text_withe_bold_16"
         tools:text="wind" />
 
     <TextView
         android:id="@+id/tv_humidity"
+        style="@style/text_withe_bold_16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/blue"
         app:layout_constraintBottom_toBottomOf="@+id/tv_wind"
         app:layout_constraintEnd_toEndOf="@+id/iv_humidity"
         app:layout_constraintStart_toStartOf="@+id/iv_humidity"
         app:layout_constraintTop_toTopOf="@+id/tv_wind"
-        style="@style/text_withe_bold_16"
         tools:text="humidity" />
 
     <TextView
         android:id="@+id/tv_pressure"
+        style="@style/text_withe_bold_16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/text_withe_bold_16"
+        android:textColor="@color/green"
         app:layout_constraintBottom_toBottomOf="@+id/tv_humidity"
         app:layout_constraintEnd_toEndOf="@+id/iv_pressure"
         app:layout_constraintStart_toStartOf="@+id/iv_pressure"
@@ -165,9 +188,10 @@
 
     <TextView
         android:id="@+id/tv_uv"
+        style="@style/text_withe_bold_16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/text_withe_bold_16"
+        android:textColor="@color/yellow"
         app:layout_constraintEnd_toEndOf="@+id/iv_uv"
         app:layout_constraintStart_toStartOf="@+id/iv_uv"
         app:layout_constraintTop_toBottomOf="@+id/iv_uv"
@@ -175,9 +199,10 @@
 
     <TextView
         android:id="@+id/tv_cloudiness"
+        style="@style/text_withe_bold_16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/text_withe_bold_16"
+        android:textColor="@color/dark_blue"
         app:layout_constraintBottom_toBottomOf="@+id/tv_uv"
         app:layout_constraintEnd_toEndOf="@+id/iv_cloudiness"
         app:layout_constraintStart_toStartOf="@+id/iv_cloudiness"
@@ -186,14 +211,41 @@
 
     <TextView
         android:id="@+id/tv_dir"
+        style="@style/text_withe_bold_16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/text_withe_bold_16"
+        android:textColor="@color/rose_quartz"
         app:layout_constraintBottom_toBottomOf="@+id/tv_cloudiness"
         app:layout_constraintEnd_toEndOf="@+id/iv_dir"
         app:layout_constraintStart_toStartOf="@+id/iv_dir"
         app:layout_constraintTop_toTopOf="@+id/tv_cloudiness"
         tools:text="wind direction" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_hourly"
+        android:layout_width="0dp"
+        tools:itemCount="24"
+        tools:listitem="@layout/hourly_item"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/tv_uv"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_daily"
+        android:layout_width="0dp"
+        tools:listitem="@layout/daily_item"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/rv_hourly"/>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

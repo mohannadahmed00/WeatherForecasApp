@@ -3,13 +3,15 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#BCBCBC</color>
+    <color name="light_gray">#CBC6CF</color>
+
 
     <color name="red">#F2674D</color>
     <color name="dark_green">#058240</color>
     <color name="green">#87C159</color>
     <color name="blue">#ADCACB</color>
     <color name="dark_blue">#337CB5</color>
-    <color name="light_yellow">#FEE3A2</color>
+    <color name="light_yellow">#FFECBF</color>
     <color name="yellow">#F3C301</color>
 
 

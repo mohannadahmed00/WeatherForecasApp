@@ -17,7 +17,7 @@ class HomeVM(private val repo: RepoInterface):ViewModel() {
 
     fun getForecast(){
         viewModelScope.launch {
-           _forecast.postValue(repo.getForecast(23,75))
+           _forecast.postValue(repo.getForecast(23,45))
         }
     }
 
