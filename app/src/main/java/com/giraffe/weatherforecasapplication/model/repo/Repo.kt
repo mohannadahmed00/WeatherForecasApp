@@ -18,7 +18,11 @@ class Repo private constructor(private val remoteSource: RemoteSource,private va
     }
 
     override suspend fun getForecast(lat: Double, lon: Double) = remoteSource.getForecast(lat, lon)
+    override suspend fun getAllFavorites() = localSource.getAllFavorites()
+
     override suspend fun insertForecast(forecast: ForecastModel) = localSource.insertForecast(forecast)
+    override suspend fun deleteForecast(forecast: ForecastModel) = localSource.deleteForecast(forecast)
+
     override suspend fun deleteAllForecasts() = localSource.deleteAllForecasts()
 
 }

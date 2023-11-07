@@ -7,6 +7,8 @@ interface RepoInterface {
 
 
     suspend fun getForecast(lat:Double,lon:Double): Response<ForecastModel>
+    suspend fun getAllFavorites(): List<ForecastModel>
     suspend fun insertForecast(forecast:ForecastModel):Long
+    suspend fun deleteForecast(forecast:ForecastModel):Int
     suspend fun deleteAllForecasts()
 }

@@ -29,11 +29,5 @@ class HomeVM(private val repo: RepoInterface):ViewModel() {
             repo.insertForecast(forecast)
         }
     }
-
-    fun deleteAllForecasts(){
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.deleteAllForecasts()
-        }
-    }
 }
 
