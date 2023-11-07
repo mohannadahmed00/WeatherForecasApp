@@ -9,7 +9,7 @@ import retrofit2.http.Query
 interface ApiServices {
     @GET("data/2.5/onecall")
     suspend fun getForecast(
-        @Query("lat") lat: Int,
-        @Query("lon") lon: Int,
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
     ):Response<ForecastModel>
 }

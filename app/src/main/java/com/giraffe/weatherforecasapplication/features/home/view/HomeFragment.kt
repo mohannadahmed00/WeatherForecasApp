@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.giraffe.weatherforecasapplication.OnDrawerClick
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
+import com.giraffe.weatherforecasapplication.database.SharedHelper
 import com.giraffe.weatherforecasapplication.databinding.FragmentHomeBinding
 import com.giraffe.weatherforecasapplication.features.home.view.adapters.DailyAdapter
 import com.giraffe.weatherforecasapplication.features.home.view.adapters.HourlyAdapter
@@ -19,11 +20,13 @@ import com.giraffe.weatherforecasapplication.model.Daily
 import com.giraffe.weatherforecasapplication.model.ForecastModel
 import com.giraffe.weatherforecasapplication.model.repo.Repo
 import com.giraffe.weatherforecasapplication.network.ApiClient
+import com.giraffe.weatherforecasapplication.utils.Constants
 import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.TimeZone
+import kotlin.math.log
 
 class HomeFragment : Fragment() {
     companion object {
@@ -37,12 +40,12 @@ class HomeFragment : Fragment() {
     private lateinit var dailyAdapter: DailyAdapter
     private lateinit var onDrawerClick: OnDrawerClick
 
+
     private var forecastModel: ForecastModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         factory = ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
         viewModel = ViewModelProvider(this, factory)[HomeVM::class.java]
-        viewModel.getForecast()
         hourlyAdapter = HourlyAdapter(mutableListOf())
         dailyAdapter = DailyAdapter(mutableListOf())
     }
@@ -57,8 +60,11 @@ class HomeFragment : Fragment() {
 
     //
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val lat = SharedHelper.getInstance(requireContext()).read(Constants.LocationKeys.CURRENT_LAT)?.toDouble()?:0.0
+        val lon = SharedHelper.getInstance(requireContext()).read(Constants.LocationKeys.CURRENT_LON)?.toDouble()?:0.0
+        Log.i(TAG, "onViewCreated: (lat:$lat , lon:$lon)")
+        viewModel.getForecast(lat,lon)
         onDrawerClick = activity as OnDrawerClick
-
         binding.ivMore.setOnClickListener {
             onDrawerClick.onClick()
         }
@@ -73,6 +79,7 @@ class HomeFragment : Fragment() {
 
         viewModel.forecast.observe(viewLifecycleOwner) {
             if (it.isSuccessful) {
+                forecastModel = it.body()
                 val response= it?.body()
                 val current = response?.current
                 binding.tvZone.text = response?.timezone?.split("/")?.get(1)?:"unknown zone"
@@ -91,13 +98,18 @@ class HomeFragment : Fragment() {
                 Log.i(TAG, "daily size: ${response?.daily?.size}")
                 dailyAdapter.updateList(response?.daily?: listOf())
                 Log.i(TAG, "adapter daily size: ${dailyAdapter.itemCount}")
-
                 Log.i(TAG, "hourly size: ${response?.hourly?.size}")
                 hourlyAdapter.updateList(response?.hourly?.take(24)?: listOf())
                 Log.i(TAG, "adapter hourly size: ${hourlyAdapter.itemCount}")
 
             } else {
                 binding.tvCurrentTemp.text = it.message()
+            }
+        }
+
+        binding.ivFavorite.setOnClickListener {
+            forecastModel?.let {
+                viewModel.insertForecast(it)
             }
         }
 

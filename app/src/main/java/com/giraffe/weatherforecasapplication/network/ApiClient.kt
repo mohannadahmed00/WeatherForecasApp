@@ -34,5 +34,5 @@ object ApiClient: RemoteSource {
         .build().create(ApiServices::class.java)
 
 
-    override suspend fun getForecast(lat: Int, lon: Int) = apiServices.getForecast(lat, lon)
+    override suspend fun getForecast(lat: Double, lon: Double) = apiServices.getForecast(lat, lon)
 }

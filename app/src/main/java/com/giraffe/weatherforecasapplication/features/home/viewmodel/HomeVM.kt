@@ -4,8 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.giraffe.weatherforecasapplication.database.SharedHelper
 import com.giraffe.weatherforecasapplication.model.ForecastModel
 import com.giraffe.weatherforecasapplication.model.repo.RepoInterface
+import com.giraffe.weatherforecasapplication.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -15,9 +17,10 @@ class HomeVM(private val repo: RepoInterface):ViewModel() {
     private val _forecast = MutableLiveData<Response<ForecastModel>>()
     val forecast:LiveData<Response<ForecastModel>> = _forecast
 
-    fun getForecast(){
+    fun getForecast(lat:Double,lon:Double){
         viewModelScope.launch {
-           _forecast.postValue(repo.getForecast(23,45))
+
+           _forecast.postValue(repo.getForecast(lat,lon))
         }
     }
 
