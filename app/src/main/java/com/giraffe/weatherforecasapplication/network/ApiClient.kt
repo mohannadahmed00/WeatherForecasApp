@@ -1,9 +1,12 @@
 package com.giraffe.weatherforecasapplication.network
 
+import com.giraffe.weatherforecasapplication.model.ForecastModel
 import com.giraffe.weatherforecasapplication.utils.Constants
+import kotlinx.coroutines.flow.flow
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
