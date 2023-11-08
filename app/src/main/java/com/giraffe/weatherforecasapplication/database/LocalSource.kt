@@ -1,6 +1,8 @@
 package com.giraffe.weatherforecasapplication.database
 
 import com.giraffe.weatherforecasapplication.model.ForecastModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 
 
 interface LocalSource {

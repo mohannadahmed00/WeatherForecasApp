@@ -7,11 +7,13 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.giraffe.weatherforecasapplication.model.ForecastModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 
 @Dao
 interface FavoritesDao {
     @Query("SELECT * FROM forecast_table")
-    suspend fun getFavForecasts(): List<ForecastModel>
+    fun getFavForecasts(): List<ForecastModel>
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend  fun insertForecast(forecast: ForecastModel):Long
     @Delete
