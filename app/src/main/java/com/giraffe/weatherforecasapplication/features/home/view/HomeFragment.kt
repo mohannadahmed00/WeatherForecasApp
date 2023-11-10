@@ -104,6 +104,7 @@ class HomeFragment : Fragment() {
                         binding.tvZone.text =
                             response?.timezone?.split("/")?.get(1) ?: "unknown zone"
                         binding.tvCurrentTemp.text = current?.temp?.toInt().toString().plus("°C")
+                        //binding.tvCurrentTemp.text = current?.getTemp(SharedHelper.getInstance(requireContext()).read(Constants.TEMP_UNIT)?:"")
                         Glide.with(requireContext())
                             .load("https://openweathermap.org/img/wn/${current?.weather?.get(0)?.icon ?: "02d"}.png")
                             .into(binding.ivCurrent)

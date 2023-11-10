@@ -20,7 +20,7 @@ object ApiClient: RemoteSource {
             val url = originalHttpUrl.newBuilder()
                 .addQueryParameter("appid", Constants.API_KEY)
                 .addQueryParameter("units", Constants.UNITS)
-                .addQueryParameter("lang", Constants.LANG)
+                .addQueryParameter("lang", Constants.LANGUAGE)
                 .build()
             val requestBuilder: Request.Builder = original.newBuilder()
                 .url(url)

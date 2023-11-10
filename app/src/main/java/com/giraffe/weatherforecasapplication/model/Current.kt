@@ -10,6 +10,7 @@ data class Current(
     val sunrise: Double,
     val sunset: Double,
     val temp: Double,
+    //@SerializedName("temp") private val _temp: Double,
     val uvi: Double,
     val visibility: Double,
     val weather: List<Weather>,

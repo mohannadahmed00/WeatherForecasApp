@@ -12,4 +12,16 @@ interface RepoInterface {
     suspend fun insertForecast(forecast:ForecastModel):Long
     suspend fun deleteForecast(forecast:ForecastModel):Flow<UiState<Int>>
     suspend fun deleteAllForecasts()
+
+
+
+
+    suspend fun getLanguage():Flow<String>
+    suspend fun getTempUnit():Flow<String>
+    suspend fun getWindSpeedUnit():Flow<String>
+    suspend fun getNotificationFlag():Flow<Boolean>
+    suspend fun setLanguage(lang:String)
+    suspend fun setTempUnit(unit:String)
+    suspend fun setWindSpeedUnit(unit:String)
+    suspend fun setNotificationFlag(notifyFlag:Boolean)
 }

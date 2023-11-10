@@ -52,7 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:gravity="center"
-        android:text="Temp Unit"
+        android:text="@string/temperature_unit"
         android:textColor="@color/red"
         app:layout_constraintBottom_toTopOf="@id/tb_temp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -67,13 +67,28 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:gravity="center"
-        android:text="Wind Speed Unit"
+        android:text="@string/wind_speed_unit"
         android:textColor="@color/red"
         app:layout_constraintBottom_toTopOf="@id/tb_wind"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tb_temp" />
+
+    <TextView
+        android:id="@+id/tv_notification"
+        style="@style/text_withe_bold_16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:gravity="center"
+        android:text="@string/notifications"
+        android:textColor="@color/red"
+        app:layout_constraintBottom_toTopOf="@id/tb_notification"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tb_wind" />
 
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/tb_lang"
@@ -90,19 +105,19 @@
 
         <Button
             android:id="@+id/btn_ar"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/toggle_button_style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Arabic" />
+            android:text="@string/arabic" />
 
         <Button
             android:id="@+id/btn_en"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/toggle_button_style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="English" />
+            android:text="@string/english" />
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -121,27 +136,27 @@
 
         <Button
             android:id="@+id/btn_celsius"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/toggle_button_style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="°C" />
+            android:text="@string/c" />
 
         <Button
             android:id="@+id/btn_fahrenheit"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/toggle_button_style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="°F" />
+            android:text="@string/f" />
 
         <Button
             android:id="@+id/btn_kelvin"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/toggle_button_style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="K" />
+            android:text="@string/k" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <com.google.android.material.button.MaterialButtonToggleGroup
@@ -149,7 +164,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tv_notification"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_wind"
@@ -158,19 +173,48 @@
 
         <Button
             android:id="@+id/btn_miles"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/toggle_button_style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="miles/hour" />
+            android:text="@string/miles_hour" />
 
         <Button
             android:id="@+id/btn_metre"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            style="@style/toggle_button_style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="metre/sec" />
+            android:text="@string/metre_sec" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/tb_notification"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_notification"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <Button
+            android:id="@+id/btn_on"
+            style="@style/toggle_button_style"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/on" />
+
+        <Button
+            android:id="@+id/btn_off"
+            style="@style/toggle_button_style"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/off" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
 

@@ -7,15 +7,15 @@ object Constants {
     const val TEMP_UNIT = "TEMP_UNIT"
     const val WIND_SPEED_UNIT = "WIND_SPEED_UNIT"
     const val LANGUAGE = "LANGUAGE"
-    const val LANG = "en"
+    const val NOTIFY_FLAG = "NOTIFY_FLAG"
     object LocationKeys{
         const val CURRENT_LON = "CURRENT_LON"
         const val CURRENT_LAT = "CURRENT_LAT"
     }
 
     object Languages{
-        const val ARABIC = "CURRENT_LON"
-        const val ENGLISH = "CURRENT_LAT"
+        const val ARABIC = "ARABIC"
+        const val ENGLISH = "ENGLISH"
     }
 
     object TempUnits{

@@ -56,7 +56,7 @@ class Repo private constructor(
         }.onStart { UiState.Loading }
     }
 
-    override suspend fun getAllFavorites() :Flow<UiState<List<ForecastModel>>>{
+    override suspend fun getAllFavorites(): Flow<UiState<List<ForecastModel>>> {
         return flow {
             try {
                 val response = localSource.getAllFavorites()
@@ -74,11 +74,11 @@ class Repo private constructor(
     override suspend fun insertForecast(forecast: ForecastModel) =
         localSource.insertForecast(forecast)
 
-    override suspend fun deleteForecast(forecast: ForecastModel):Flow<UiState<Int>> {
+    override suspend fun deleteForecast(forecast: ForecastModel): Flow<UiState<Int>> {
         return flow {
             try {
                 val response = localSource.deleteForecast(forecast)
-                if (response>0) {
+                if (response > 0) {
                     emit(UiState.Success(response))
                 } else {
                     emit(UiState.Fail("deletion failed"))
@@ -90,5 +90,22 @@ class Repo private constructor(
     }
 
     override suspend fun deleteAllForecasts() = localSource.deleteAllForecasts()
+    override suspend fun getLanguage() = flow { emit(localSource.getLanguage()) }
+
+
+    override suspend fun getTempUnit() = flow{ emit(localSource.getTempUnit()) }
+
+    override suspend fun getWindSpeedUnit() = flow{ emit(localSource.getWindSpeedUnit()) }
+
+    override suspend fun getNotificationFlag() = flow{ emit(localSource.getNotificationFlag()) }
+
+    override suspend fun setLanguage(lang: String) = localSource.setLanguage(lang)
+
+    override suspend fun setTempUnit(unit: String) = localSource.setTempUnit(unit)
+
+    override suspend fun setWindSpeedUnit(unit: String) = localSource.setWindSpeedUnit(unit)
+
+    override suspend fun setNotificationFlag(notifyFlag: Boolean) =
+        localSource.setNotificationFlag(notifyFlag)
 
 }

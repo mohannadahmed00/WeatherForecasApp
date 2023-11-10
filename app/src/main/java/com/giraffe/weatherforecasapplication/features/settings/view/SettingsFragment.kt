@@ -1,11 +1,13 @@
 package com.giraffe.weatherforecasapplication.features.settings.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.giraffe.weatherforecasapplication.OnDrawerClick
 import com.giraffe.weatherforecasapplication.R
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
@@ -16,6 +18,7 @@ import com.giraffe.weatherforecasapplication.model.repo.Repo
 import com.giraffe.weatherforecasapplication.network.ApiClient
 import com.giraffe.weatherforecasapplication.utils.Constants
 import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
+import kotlinx.coroutines.launch
 
 class SettingsFragment : Fragment() {
     companion object {
@@ -29,8 +32,13 @@ class SettingsFragment : Fragment() {
     private lateinit var onDrawerClick: OnDrawerClick
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        factory = ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
-        viewModel = ViewModelProvider(this,factory)[SettingsVM::class.java]
+        factory =
+            ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
+        viewModel = ViewModelProvider(this, factory)[SettingsVM::class.java]
+        viewModel.getLanguage()
+        viewModel.getTempUnit()
+        viewModel.getWindSpeedUnit()
+        viewModel.getNotificationFlag()
     }
 
     override fun onCreateView(
@@ -47,89 +55,132 @@ class SettingsFragment : Fragment() {
         binding.ivMore.setOnClickListener {
             onDrawerClick.onClick()
         }
-        val lang = SharedHelper.getInstance(requireContext()).read(Constants.LANG)
-        val tempUnit = SharedHelper.getInstance(requireContext()).read(Constants.TEMP_UNIT)
-        val windSpeedUnit = SharedHelper.getInstance(requireContext()).read(Constants.WIND_SPEED_UNIT)
-
-        when(lang){
-            Constants.Languages.ENGLISH->{
-                binding.tbLang.check(R.id.btn_en)
-            }
-            Constants.Languages.ARABIC->{
-                binding.tbLang.check(R.id.btn_ar)
-            }
-            else->{
-                SharedHelper.getInstance(requireContext()).store(Constants.LANG,Constants.Languages.ENGLISH)
-                binding.tbLang.check(R.id.btn_en)
-            }
-        }
-        when(tempUnit){
-            Constants.TempUnits.CELSIUS->{
-                binding.tbTemp.check(R.id.btn_celsius)
-            }
-            Constants.TempUnits.FAHRENHEIT->{
-                binding.tbTemp.check(R.id.btn_fahrenheit)
-            }
-            Constants.TempUnits.KELVIN->{
-                binding.tbTemp.check(R.id.btn_kelvin)
-            }
-            else->{
-                SharedHelper.getInstance(requireContext()).store(Constants.TEMP_UNIT,Constants.TempUnits.CELSIUS)
-                binding.tbTemp.check(R.id.btn_celsius)
-            }
-        }
-        when(windSpeedUnit){
-            Constants.WindSpeedUnits.METRE->{
-                binding.tbWind.check(R.id.btn_metre)
-            }
-            Constants.WindSpeedUnits.MILES->{
-                binding.tbWind.check(R.id.btn_miles)
-            }
-            else->{
-                SharedHelper.getInstance(requireContext()).store(Constants.WIND_SPEED_UNIT,"metre")
-                binding.tbWind.check(R.id.btn_metre)
-            }
-        }
 
 
+        lifecycleScope.launch {
+            viewModel.language.collect {
+                Log.i(TAG, "language: $it")
+                when (it) {
+                    Constants.Languages.ENGLISH -> {
+                        binding.tbLang.check(R.id.btn_en)
+                    }
 
-        binding.tbLang.addOnButtonCheckedListener { _, checkedId, _ ->
-            when(checkedId){
-                R.id.btn_ar-> {
-                    SharedHelper.getInstance(requireContext()).store(Constants.LANG,Constants.Languages.ARABIC)
-                    //binding.tbLang.check(R.id.btn_ar)
-                }
-                R.id.btn_en-> {
-                    SharedHelper.getInstance(requireContext()).store(Constants.LANG,Constants.Languages.ENGLISH)
-                    //binding.tbLang.check(R.id.btn_en)
+                    Constants.Languages.ARABIC -> {
+                        binding.tbLang.check(R.id.btn_ar)
+                    }
                 }
             }
         }
-        binding.tbTemp.addOnButtonCheckedListener { _, checkedId, _ ->
-            when(checkedId){
-                R.id.btn_celsius-> {
-                    SharedHelper.getInstance(requireContext()).store(Constants.LANG,Constants.TempUnits.CELSIUS)
-                    //binding.tbLang.check(R.id.btn_celsius)
-                }
-                R.id.btn_fahrenheit-> {
-                    SharedHelper.getInstance(requireContext()).store(Constants.LANG,Constants.TempUnits.FAHRENHEIT)
-                    //binding.tbLang.check(R.id.btn_fahrenheit)
-                }
-                R.id.btn_kelvin-> {
-                    SharedHelper.getInstance(requireContext()).store(Constants.LANG,Constants.TempUnits.KELVIN)
-                    //binding.tbLang.check(R.id.btn_kelvin)
+        lifecycleScope.launch {
+            viewModel.tempUnit.collect {
+                Log.i(TAG, "tempUnit: $it")
+                when (it) {
+                    Constants.TempUnits.CELSIUS -> {
+                        binding.tbTemp.check(R.id.btn_celsius)
+                    }
+
+                    Constants.TempUnits.FAHRENHEIT -> {
+                        binding.tbTemp.check(R.id.btn_fahrenheit)
+                    }
+
+                    Constants.TempUnits.KELVIN -> {
+                        binding.tbTemp.check(R.id.btn_kelvin)
+                    }
                 }
             }
         }
-        binding.tbWind.addOnButtonCheckedListener { _, checkedId, _ ->
-            when(checkedId){
-                R.id.btn_miles-> {
-                    SharedHelper.getInstance(requireContext()).store(Constants.LANG,Constants.WindSpeedUnits.MILES)
-                    //binding.tbLang.check(R.id.btn_miles)
+        lifecycleScope.launch {
+            viewModel.windSpeedUnit.collect {
+                Log.i(TAG, "windSpeedUnit: $it")
+                when (it) {
+                    Constants.WindSpeedUnits.METRE -> {
+                        binding.tbWind.check(R.id.btn_metre)
+                    }
+
+                    Constants.WindSpeedUnits.MILES -> {
+                        binding.tbWind.check(R.id.btn_miles)
+                    }
                 }
-                R.id.btn_metre-> {
-                    SharedHelper.getInstance(requireContext()).store(Constants.LANG,Constants.WindSpeedUnits.METRE)
-                    //binding.tbLang.check(R.id.btn_metre)
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.notifyFlag.collect {
+                Log.i(TAG, "notifyFlag: $it")
+                when (it) {
+                    true -> {
+                        binding.tbNotification.check(R.id.btn_on)
+                    }
+                    false -> {
+                        binding.tbNotification.check(R.id.btn_off)
+                    }
+                }
+            }
+        }
+
+
+
+
+        binding.tbLang.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.btn_ar -> {
+                        Log.d(TAG, "select: ${Constants.Languages.ARABIC}")
+                        viewModel.setLanguage(Constants.Languages.ARABIC)
+                    }
+
+                    R.id.btn_en -> {
+                        Log.d(TAG, "select: ${Constants.Languages.ENGLISH}")
+                        viewModel.setLanguage(Constants.Languages.ENGLISH)
+                    }
+                }
+            }
+        }
+        binding.tbTemp.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.btn_celsius -> {
+                        Log.d(TAG, "select: ${Constants.TempUnits.CELSIUS}")
+                        viewModel.setTempUnit(Constants.TempUnits.CELSIUS)
+                    }
+
+                    R.id.btn_fahrenheit -> {
+                        Log.d(TAG, "select: ${Constants.TempUnits.FAHRENHEIT}")
+                        viewModel.setTempUnit(Constants.TempUnits.FAHRENHEIT)
+                    }
+
+                    R.id.btn_kelvin -> {
+                        Log.d(TAG, "select: ${Constants.TempUnits.KELVIN}")
+                        viewModel.setTempUnit(Constants.TempUnits.KELVIN)
+                    }
+                }
+            }
+        }
+        binding.tbWind.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.btn_miles -> {
+                        Log.d(TAG, "select: ${Constants.WindSpeedUnits.MILES}")
+                        viewModel.setWindSpeedUnit(Constants.WindSpeedUnits.MILES)
+                    }
+
+                    R.id.btn_metre -> {
+                        Log.d(TAG, "select: ${Constants.WindSpeedUnits.METRE}")
+
+                        viewModel.setWindSpeedUnit(Constants.WindSpeedUnits.METRE)
+                    }
+                }
+            }
+        }
+        binding.tbNotification.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.btn_on -> {
+                        viewModel.setNotificationFlag(true)
+                    }
+
+                    R.id.btn_off -> {
+                        viewModel.setNotificationFlag(false)
+                    }
                 }
             }
         }
