@@ -1,16 +1,177 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".features.settings.view.SettingsFragment">
 
-    <TextView
-        style="@style/text_withe_bold_16"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/light_yellow"
-        android:gravity="center"
-        android:text="@string/settings" />
+    <ImageView
+        android:id="@+id/iv_more"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_margin="8dp"
+        android:src="@drawable/more_ic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/red" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/tv_favorites"
+        style="@style/text_withe_30"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings"
+        android:textColor="@color/gray"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_more"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/iv_more" />
+
+    <TextView
+        android:id="@+id/tv_lang"
+        style="@style/text_withe_bold_16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:gravity="center"
+        android:text="@string/language"
+        android:textColor="@color/red"
+        app:layout_constraintBottom_toTopOf="@id/tb_lang"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+
+    <TextView
+        android:id="@+id/tv_temp"
+        style="@style/text_withe_bold_16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:gravity="center"
+        android:text="Temp Unit"
+        android:textColor="@color/red"
+        app:layout_constraintBottom_toTopOf="@id/tb_temp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tb_lang" />
+
+    <TextView
+        android:id="@+id/tv_wind"
+        style="@style/text_withe_bold_16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:gravity="center"
+        android:text="Wind Speed Unit"
+        android:textColor="@color/red"
+        app:layout_constraintBottom_toTopOf="@id/tb_wind"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tb_temp" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/tb_lang"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/tv_temp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_lang"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <Button
+            android:id="@+id/btn_ar"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Arabic" />
+
+        <Button
+            android:id="@+id/btn_en"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="English" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/tb_temp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/tv_wind"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_temp"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <Button
+            android:id="@+id/btn_celsius"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="°C" />
+
+        <Button
+            android:id="@+id/btn_fahrenheit"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="°F" />
+
+        <Button
+            android:id="@+id/btn_kelvin"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="K" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/tb_wind"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_wind"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <Button
+            android:id="@+id/btn_miles"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="miles/hour" />
+
+        <Button
+            android:id="@+id/btn_metre"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="metre/sec" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

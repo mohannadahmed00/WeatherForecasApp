@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.giraffe.weatherforecasapplication.OnDrawerClick
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
 import com.giraffe.weatherforecasapplication.databinding.FragmentFavoritesBinding
 import com.giraffe.weatherforecasapplication.features.favorites.view.adapters.FavoritesAdapter
@@ -28,7 +29,7 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnDeleteClick {
     private lateinit var binding: FragmentFavoritesBinding
     private lateinit var viewModel: FavoritesVM
     private lateinit var factory: ViewModelFactory
-
+    private lateinit var onDrawerClick: OnDrawerClick
     private lateinit var adapter: FavoritesAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +50,10 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnDeleteClick {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        onDrawerClick = activity as OnDrawerClick
+        binding.ivMore.setOnClickListener {
+            onDrawerClick.onClick()
+        }
         binding.rvFavorites.adapter = adapter
         lifecycleScope.launch {
             viewModel.favorites.collect {
