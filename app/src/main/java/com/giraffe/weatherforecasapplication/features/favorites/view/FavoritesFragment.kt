@@ -8,7 +8,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.giraffe.weatherforecasapplication.OnDrawerClick
+import com.giraffe.weatherforecasapplication.R
+import com.giraffe.weatherforecasapplication.SharedVM
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
 import com.giraffe.weatherforecasapplication.databinding.FragmentFavoritesBinding
 import com.giraffe.weatherforecasapplication.features.favorites.view.adapters.FavoritesAdapter
@@ -21,7 +24,7 @@ import com.giraffe.weatherforecasapplication.utils.UiState
 import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
 import kotlinx.coroutines.launch
 
-class FavoritesFragment : Fragment(),FavoritesAdapter.OnDeleteClick {
+class FavoritesFragment : Fragment(),FavoritesAdapter.OnDeleteClick,FavoritesAdapter.OnSelectClick {
     companion object {
         const val TAG = "FavoritesFragment"
     }
@@ -31,11 +34,13 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnDeleteClick {
     private lateinit var factory: ViewModelFactory
     private lateinit var onDrawerClick: OnDrawerClick
     private lateinit var adapter: FavoritesAdapter
+    private lateinit var sharedVM: SharedVM
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         factory = ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
         viewModel = ViewModelProvider(this, factory)[FavoritesVM::class.java]
-        adapter = FavoritesAdapter(mutableListOf(),this)
+        sharedVM = ViewModelProvider(requireActivity(), factory)[SharedVM::class.java]
+        adapter = FavoritesAdapter(mutableListOf(),this,this)
         viewModel.getFavorites()
 
     }
@@ -93,7 +98,12 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnDeleteClick {
 
     }
 
-    override fun onclick(forecast: ForecastModel) {
+    override fun onDeleteClick(forecast: ForecastModel) {
         viewModel.deleteFavorite(forecast)
+    }
+
+    override fun onSelectClick(forecast: ForecastModel) {
+        sharedVM.setForecast(forecast)
+        findNavController().navigate(R.id.homeFragment)
     }
 }

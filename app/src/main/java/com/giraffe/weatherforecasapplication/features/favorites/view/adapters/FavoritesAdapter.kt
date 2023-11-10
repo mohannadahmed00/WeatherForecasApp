@@ -12,16 +12,19 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class FavoritesAdapter(private val list: MutableList<ForecastModel>,private val onDeleteClick: OnDeleteClick) : Adapter<FavoritesAdapter.FavoriteVH>() {
+class FavoritesAdapter(private val list: MutableList<ForecastModel>,private val onDeleteClick: OnDeleteClick,private val onSelectClick: OnSelectClick) : Adapter<FavoritesAdapter.FavoriteVH>() {
 
     inner class FavoriteVH(private val binding: FavoriteItemBinding) : ViewHolder(binding.root) {
         fun bind(item: ForecastModel) {
-            binding.tvZone.text = item.timezone.split("/")[1].plus("\n ${item.current.temp}°")
+            binding.tvZone.text = item.timezone.split("/")[1]
             Glide.with(binding.root.context)
                 .load("https://openweathermap.org/img/wn/${item.current.weather[0].icon}.png")
                 .into(binding.ivWeather)
             binding.tvDes.text = item.current.weather[0].description
-            binding.ivDelete.setOnClickListener { onDeleteClick.onclick(item) }
+            binding.ivDelete.setOnClickListener { onDeleteClick.onDeleteClick(item) }
+            binding.root.setOnClickListener{
+                onSelectClick.onSelectClick(item)
+            }
         }
 
         private fun unixTimeToReadableDate(unixTime: Long): String {
@@ -48,6 +51,10 @@ class FavoritesAdapter(private val list: MutableList<ForecastModel>,private val 
     override fun onBindViewHolder(holder: FavoriteVH, position: Int) = holder.bind(list[position])
 
     interface OnDeleteClick{
-        fun onclick(forecast: ForecastModel)
+        fun onDeleteClick(forecast: ForecastModel)
+    }
+
+    interface OnSelectClick{
+        fun onSelectClick(forecast: ForecastModel)
     }
 }

@@ -8,11 +8,11 @@ data class ForecastModel(
     val lon: Double,
     val timezone: String,
     val timezone_offset: Double,
-
-
     val current: Current,
     val daily: List<Daily>,
     val hourly: List<Hourly>,
+    val isCurrent:Boolean,
+    val isFavorite:Boolean = false,
     //val minutely: List<Minutely>,
 
 )
