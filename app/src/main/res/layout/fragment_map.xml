@@ -24,5 +24,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/red" />
 
+    <Button
+        android:id="@+id/btn_confirm"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/confirm"
+        style="@style/button_style"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="1"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

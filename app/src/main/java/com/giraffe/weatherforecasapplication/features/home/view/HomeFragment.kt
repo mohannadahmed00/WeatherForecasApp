@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.net.ConnectivityManager
@@ -17,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -26,7 +26,6 @@ import com.giraffe.weatherforecasapplication.OnDrawerClick
 import com.giraffe.weatherforecasapplication.R
 import com.giraffe.weatherforecasapplication.SharedVM
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
-import com.giraffe.weatherforecasapplication.database.SharedHelper
 import com.giraffe.weatherforecasapplication.databinding.FragmentHomeBinding
 import com.giraffe.weatherforecasapplication.features.home.view.adapters.DailyAdapter
 import com.giraffe.weatherforecasapplication.features.home.view.adapters.HourlyAdapter
@@ -37,7 +36,6 @@ import com.giraffe.weatherforecasapplication.network.ApiClient
 import com.giraffe.weatherforecasapplication.utils.Constants
 import com.giraffe.weatherforecasapplication.utils.UiState
 import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
-import com.giraffe.weatherforecasapplication.utils.getAddress
 import com.giraffe.weatherforecasapplication.utils.toFahrenheit
 import com.giraffe.weatherforecasapplication.utils.toKelvin
 import com.giraffe.weatherforecasapplication.utils.toMilesPerHours
@@ -46,7 +44,6 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -64,27 +61,24 @@ class HomeFragment : Fragment() {
     private lateinit var hourlyAdapter: HourlyAdapter
     private lateinit var dailyAdapter: DailyAdapter
     private lateinit var onDrawerClick: OnDrawerClick
-    private lateinit var sharedVM:SharedVM
-    private lateinit var tempUnit:String
-    private lateinit var windSpeedUnit:String
+    private lateinit var sharedVM: SharedVM
+    private lateinit var tempUnit: String
+    private lateinit var windSpeedUnit: String
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var location: Location? = null
-    private var currentLat:Double = 0.0
-    private var currentLon:Double = 0.0
-
-
-    private var forecastModel: ForecastModel? = null
+    private var currentLat: Double = 0.0
+    private var currentLon: Double = 0.0
+    private var favorites: MutableList<ForecastModel> = mutableListOf()
+    private var selectedForecast: ForecastModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        factory = ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
+        Log.i(TAG, "onCreate: ")
+        factory =
+            ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
         viewModel = ViewModelProvider(this, factory)[HomeVM::class.java]
         sharedVM = ViewModelProvider(requireActivity(), factory)[SharedVM::class.java]
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        if(isConnected()) {
-            getLocation()
-        }else{
-            viewModel.getCurrentForecast()
-        }
+        fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(requireActivity())
     }
 
 
@@ -92,88 +86,200 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.i(TAG, "onCreateView: ")
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.i(TAG, "onViewCreated: ")
+        viewModel.getFavorites()
+        observeFavorites()
         sharedVM.getTempUnit()
+        observeTempUnit()
         sharedVM.getWindSpeedUnit()
-        lifecycleScope.launch {
-            sharedVM.tempUnit.collect{
-                tempUnit = it
-            }
-        }
-        lifecycleScope.launch {
-            sharedVM.windSpeedUnit.collect{
-                windSpeedUnit = it
-            }
-        }
+        observeWindSpeedUnit()
         handleInit()
+        observeSelectedForecast()
         handleClicks()
+    }
+
+    private fun observeFavorites() {
+        lifecycleScope.launch {
+            viewModel.favorites.collect {
+                when (it) {
+                    is UiState.Fail -> {
+                        favorites.clear()
+                        selectedForecast?.apply {
+                            handleFavoriteIcon(this, favorites)
+                        }
+                    }
+                    UiState.Loading -> {}
+                    is UiState.Success -> {
+                        favorites = it.data.toMutableList()
+                        selectedForecast?.apply {
+                            handleFavoriteIcon(this, favorites)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeForecast() {
         lifecycleScope.launch {
             viewModel.forecast.collect {
                 when (it) {
                     is UiState.Fail -> {}
                     UiState.Loading -> {}
                     is UiState.Success -> {
-                        if(!isConnected()) {
-                            Snackbar.make(requireView(), "please check your network connection", Snackbar.LENGTH_INDEFINITE).show()
-                        }
-                        forecastModel = it.data
-                        val response = it.data
-                        val current = response?.current
-                        Log.i(TAG, "onViewCreated: $currentLat , $currentLon")
-                        binding.tvZone.text = it.data?.timezone
-                        binding.tvCurrentTemp.text = convertTempToString(current?.temp?:0.0,tempUnit)
-                        Glide.with(requireContext())
-                            .load("https://openweathermap.org/img/wn/${current?.weather?.get(0)?.icon ?: "02d"}.png")
-                            .into(binding.ivCurrent)
-                        binding.tvCurrentDes.text = current?.weather?.get(0)?.description ?: "unknown description"
-                        binding.tvCurrentTimeDate.text = getCurrentUTCTime(response?.timezone_offset ?: 0.0)
-                        binding.tvWind.text = convertWindSpeedToString(current?.wind_speed?:0.0,windSpeedUnit)
-                        binding.tvHumidity.text = current?.humidity.toString().plus(" %")
-                        binding.tvPressure.text = current?.pressure.toString().plus(" hPa")
-                        binding.tvUv.text = "UV index ".plus(current?.uvi.toString())
-                        binding.tvCloudiness.text = current?.clouds.toString().plus(" %")
-                        binding.tvDir.text = current?.wind_deg.toString().plus("°")
-                        dailyAdapter.updateList(response?.daily ?: listOf())
-                        hourlyAdapter.updateList(response?.hourly?.take(24) ?: listOf())
+                        sharedVM.selectForecast(it.data)
                     }
                 }
             }
         }
+    }
 
-        /*lifecycleScope.launch {
-            sharedVM.selectedForecast.collect{
+    private fun observeSelectedForecast() {
+        lifecycleScope.launch {
+            sharedVM.selectedForecast.collect {
+                if (it == null) {
+                    if (isConnected()) {
+                        getLocation()
+                    } else {
+                        viewModel.getCurrentForecast()
+                    }
+                    observeForecast()
+                } else {
+                    handleForecastUI(it)
+                }
+            }
+        }
+    }
+
+    private fun handleForecastUI(forecast: ForecastModel) {
+        selectedForecast = forecast
+        val current = forecast.current
+        binding.tvZone.text = forecast.timezone
+        binding.tvCurrentTemp.text = convertTempToString(current.temp, tempUnit)
+        Glide.with(requireContext())
+            .load("https://openweathermap.org/img/wn/${current.weather.get(0).icon}.png")
+            .into(binding.ivCurrent)
+        binding.tvCurrentDes.text =
+            current.weather[0].description
+        binding.tvCurrentTimeDate.text =
+            getCurrentUTCTime(forecast.timezone_offset)
+        binding.tvWind.text =
+            convertWindSpeedToString(current.wind_speed ?: 0.0, windSpeedUnit)
+        binding.tvHumidity.text = current.humidity.toString().plus(" %")
+        binding.tvPressure.text = current.pressure.toString().plus(" hPa")
+        binding.tvUv.text = "UV index ".plus(current.uvi.toString())
+        binding.tvCloudiness.text = current.clouds.toString().plus(" %")
+        binding.tvDir.text = current.wind_deg.toString().plus("°")
+        dailyAdapter.updateList(forecast.daily)
+        hourlyAdapter.updateList(forecast.hourly.take(24))
+        handleFavoriteIcon(forecast, favorites)
+    }
+
+
+    private fun handleFavoriteIcon(forecast: ForecastModel, favorites: List<ForecastModel>) {
+        Log.i(TAG, "handleFavoriteIcon: ${forecast.timezone} => favorites size:${favorites.size}")
+        favorites.firstOrNull { (it.lat + it.lon) == (forecast.lat + forecast.lon) }.let {
+            if (it == null) {
+                binding.ivFavorite.setColorFilter(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.gray
+                    )
+                )
+                binding.ivFavorite.setOnClickListener {
+                    viewModel.insertForecast(forecast)
+                    observeInsertion()
+                }
+            } else {
+                binding.ivFavorite.setColorFilter(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.dark_red
+                    )
+                )
+                binding.ivFavorite.setOnClickListener {
+                    viewModel.deleteForecast(forecast)
+                    observeDeletion()
+                }
+            }
+        }
+    }
+
+    private fun observeInsertion() {
+        lifecycleScope.launch {
+            viewModel.insert.collect{
                 when(it){
                     is UiState.Fail -> {}
                     UiState.Loading -> {}
-                    is UiState.Success -> {}
+                    is UiState.Success -> {
+                        viewModel.getFavorites()
+                    }
                 }
             }
-        }*/
-
+        }
+    }
+    private fun observeDeletion() {
+        lifecycleScope.launch {
+            viewModel.delete.collect{
+                when(it){
+                    is UiState.Fail -> {}
+                    UiState.Loading -> {}
+                    is UiState.Success -> {
+                        viewModel.getFavorites()
+                    }
+                }
+            }
+        }
     }
 
-    private fun convertTempToString(temp:Double,tempUnit:String) :String{
-        return when(tempUnit){
-            Constants.TempUnits.CELSIUS-> temp.toInt().toString().plus(getString(R.string.c))
-            Constants.TempUnits.FAHRENHEIT-> temp.toFahrenheit().toInt().toString().plus(getString(R.string.f))
-            Constants.TempUnits.KELVIN-> temp.toKelvin().toInt().toString().plus(getString(R.string.k))
+    private fun observeWindSpeedUnit() {
+        lifecycleScope.launch {
+            sharedVM.windSpeedUnit.collect {
+                windSpeedUnit = it
+            }
+        }
+    }
+
+    private fun observeTempUnit() {
+        lifecycleScope.launch {
+            sharedVM.tempUnit.collect {
+                tempUnit = it
+            }
+        }
+    }
+
+    private fun convertTempToString(temp: Double, tempUnit: String): String {
+        return when (tempUnit) {
+            Constants.TempUnits.CELSIUS -> temp.toInt().toString().plus(getString(R.string.c))
+            Constants.TempUnits.FAHRENHEIT -> temp.toFahrenheit().toInt().toString()
+                .plus(getString(R.string.f))
+
+            Constants.TempUnits.KELVIN -> temp.toKelvin().toInt().toString()
+                .plus(getString(R.string.k))
+
             else -> "0.0"
         }
     }
 
-    private fun convertWindSpeedToString(speed:Double,windSpeedUnit:String) :String{
-        return when(windSpeedUnit){
-            Constants.WindSpeedUnits.METRE-> speed.toInt().toString().plus(getString(R.string.metre_sec))
-            Constants.WindSpeedUnits.MILES-> speed.toMilesPerHours().toInt().toString().plus(getString(R.string.miles_hour))
+    private fun convertWindSpeedToString(speed: Double, windSpeedUnit: String): String {
+        return when (windSpeedUnit) {
+            Constants.WindSpeedUnits.METRE -> speed.toInt().toString()
+                .plus(getString(R.string.metre_sec))
+
+            Constants.WindSpeedUnits.MILES -> speed.toMilesPerHours().toInt().toString()
+                .plus(getString(R.string.miles_hour))
+
             else -> "0.0"
         }
     }
 
-
-    private fun handleClicks(){
+    private fun handleClicks() {
         onDrawerClick = activity as OnDrawerClick
         binding.ivMore.setOnClickListener {
             onDrawerClick.onClick()
@@ -182,16 +288,19 @@ class HomeFragment : Fragment() {
             val action = HomeFragmentDirections.actionHomeFragmentToMapFragment()
             findNavController().navigate(action)
         }
-        binding.ivFavorite.setOnClickListener {
-            forecastModel?.let {
-                viewModel.insertForecast(it)
+        binding.ivCurrentLocation.setOnClickListener {
+            if (isConnected()) {
+                getLocation()
+            } else {
+                viewModel.getCurrentForecast()
             }
+            observeForecast()
         }
     }
 
-    private fun handleInit(){
-        hourlyAdapter = HourlyAdapter(mutableListOf(),tempUnit)
-        dailyAdapter = DailyAdapter(mutableListOf(),tempUnit)
+    private fun handleInit() {
+        hourlyAdapter = HourlyAdapter(mutableListOf(), tempUnit)
+        dailyAdapter = DailyAdapter(mutableListOf(), tempUnit)
         binding.rvHourly.adapter = hourlyAdapter
         binding.rvDaily.adapter = dailyAdapter
     }
@@ -209,13 +318,12 @@ class HomeFragment : Fragment() {
     //====================location work area======================
 
 
-
     private val locationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             location = locationResult.lastLocation
             currentLat = location?.latitude ?: 0.0
             currentLon = location?.longitude ?: 0.0
-            viewModel.getForecast(currentLat, currentLon,true)
+            viewModel.getForecast(currentLat, currentLon, true)
             fusedLocationProviderClient.removeLocationUpdates(this)
         }
     }
@@ -267,7 +375,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun isLocationEnabled(): Boolean {
-        val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationManager =
+            requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
@@ -278,23 +387,19 @@ class HomeFragment : Fragment() {
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             interval = 0
         }
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
+        fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(requireActivity())
+        fusedLocationProviderClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.myLooper()
+        )
     }
 
-    /*fun getAddress(context: Context,latitude: Double, longitude: Double): String {
-        val geoCoder = Geocoder(context)
-        val address = geoCoder.getFromLocation(latitude, longitude, 1)
-        return if (!address.isNullOrEmpty()) {
-            "${address[0].adminArea}, ${address[0].countryName}"
-        } else {
-            "unknown area"
-        }
-    }*/
-
     //========================check internet==================
-    fun isConnected(): Boolean {
-        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private fun isConnected(): Boolean {
+        val connectivityManager =
+            requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         return connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork) != null
     }
 

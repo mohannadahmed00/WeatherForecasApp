@@ -10,7 +10,7 @@ import retrofit2.Response
 interface RepoInterface {
     suspend fun getForecast(lat:Double,lon:Double,isCurrent: Boolean): Flow<UiState<ForecastModel?>>
     suspend fun getAllFavorites(): Flow<UiState<List<ForecastModel>>>
-    suspend fun insertForecast(forecast:ForecastModel):Long
+    suspend fun insertForecast(forecast:ForecastModel):Flow<UiState<Long>>
     suspend fun deleteForecast(forecast:ForecastModel):Flow<UiState<Int>>
     suspend fun deleteAllForecasts()
     suspend fun deleteCurrent()

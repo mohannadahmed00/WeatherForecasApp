@@ -19,4 +19,5 @@
     <string name="wind_speed_unit">Wind Speed Unit</string>
     <string name="notifications">Notifications</string>
     <string name="temperature_unit">Temperature Unit</string>
+    <string name="confirm">Confirm</string>
 </resources>

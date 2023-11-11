@@ -103,7 +103,7 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnDeleteClick,FavoritesAda
     }
 
     override fun onSelectClick(forecast: ForecastModel) {
-        sharedVM.setForecast(forecast)
+        sharedVM.selectForecast(forecast)
         findNavController().navigate(R.id.homeFragment)
     }
 }

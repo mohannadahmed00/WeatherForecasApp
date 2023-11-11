@@ -40,7 +40,11 @@ class Repo private constructor(
         }
     }
 
-    override suspend fun getForecast(lat: Double, lon: Double,isCurrent: Boolean): Flow<UiState<ForecastModel?>> {
+    override suspend fun getForecast(
+        lat: Double,
+        lon: Double,
+        isCurrent: Boolean
+    ): Flow<UiState<ForecastModel?>> {
         return flow {
             try {
                 val response = remoteSource.getForecast(lat, lon)
@@ -48,7 +52,7 @@ class Repo private constructor(
                     val f = response.body()
                     f?.apply {
                         this.isCurrent = isCurrent
-                        if (isCurrent){
+                        if (isCurrent) {
                             deleteCurrent()
                             insertForecast(f)
                         }
@@ -79,9 +83,24 @@ class Repo private constructor(
         }.onStart { UiState.Loading }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun insertForecast(forecast: ForecastModel) = localSource.insertForecast(forecast)
+    override suspend fun insertForecast(forecast: ForecastModel): Flow<UiState<Long>> {
+        return flow {
+            try {
+                val response = localSource.insertForecast(forecast)
+                if (response>0) {
+                    emit(UiState.Success(response))
+                } else {
+                    emit(UiState.Fail("fail insertion"))
+                }
+            } catch (e: Exception) {
+                emit(UiState.Fail(e.message ?: "unknown error"))
+            }
+        }.onStart { UiState.Loading }.flowOn(Dispatchers.IO)
+
+    }
+
     override suspend fun deleteCurrent() = localSource.deleteCurrent()
-    override suspend fun getCurrent() : Flow<UiState<ForecastModel?>>{
+    override suspend fun getCurrent(): Flow<UiState<ForecastModel?>> {
         return flow {
             try {
                 val response = localSource.getCurrent()
@@ -116,11 +135,11 @@ class Repo private constructor(
     override suspend fun getLanguage() = flow { emit(localSource.getLanguage()) }
 
 
-    override suspend fun getTempUnit() = flow{ emit(localSource.getTempUnit()) }
+    override suspend fun getTempUnit() = flow { emit(localSource.getTempUnit()) }
 
-    override suspend fun getWindSpeedUnit() = flow{ emit(localSource.getWindSpeedUnit()) }
+    override suspend fun getWindSpeedUnit() = flow { emit(localSource.getWindSpeedUnit()) }
 
-    override suspend fun getNotificationFlag() = flow{ emit(localSource.getNotificationFlag()) }
+    override suspend fun getNotificationFlag() = flow { emit(localSource.getNotificationFlag()) }
 
     override suspend fun setLanguage(lang: String) = localSource.setLanguage(lang)
 

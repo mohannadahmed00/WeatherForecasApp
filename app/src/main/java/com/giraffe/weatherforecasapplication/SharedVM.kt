@@ -13,10 +13,13 @@ import com.giraffe.weatherforecasapplication.utils.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class SharedVM(val repo: RepoInterface) : ViewModel() {
 
+    private val _selectedLocation = MutableStateFlow<Pair<Double,Double>?>(null)
+    val selectedLocation: StateFlow<Pair<Double,Double>?> = _selectedLocation.asStateFlow()
 
     private val _language = MutableStateFlow(Constants.Languages.ENGLISH)
     val language: StateFlow<String> = _language.asStateFlow()
@@ -65,11 +68,33 @@ class SharedVM(val repo: RepoInterface) : ViewModel() {
     /*private val _selectedForecast = MutableLiveData<ForecastModel?>()
     val selectedForecast: LiveData<ForecastModel?> = _selectedForecast*/
 
-    private val _selectedForecast = MutableStateFlow<UiState<ForecastModel?>>(UiState.Loading)
-    val selectedForecast: StateFlow<UiState<ForecastModel?>> = _selectedForecast.asStateFlow()
-    fun setForecast(forecast: ForecastModel?) {
+    private val _selectedForecast = MutableStateFlow<ForecastModel?>(null)
+    val selectedForecast: StateFlow<ForecastModel?> = _selectedForecast.asStateFlow()
+    fun selectForecast(forecast: ForecastModel?) {
         viewModelScope.launch {
-            _selectedForecast.emit(UiState.Success(forecast))
+            _selectedForecast.emit(forecast)
+        }
+    }
+
+
+    fun selectLocation(lat:Double,lon:Double){
+        viewModelScope.launch {
+            repo.getForecast(lat,lon,false)
+                .catch {  }
+                .collect{
+                    when(it){
+                        is UiState.Fail -> {
+
+                        }
+                        UiState.Loading -> {
+
+                        }
+                        is UiState.Success -> {
+                            _selectedForecast.emit(it.data)
+                        }
+                    }
+                }
+            //_selectedLocation.emit(Pair(lat,lon))
         }
     }
 }

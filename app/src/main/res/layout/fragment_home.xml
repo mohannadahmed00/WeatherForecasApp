@@ -25,6 +25,7 @@
         android:layout_margin="8dp"
         android:src="@drawable/location_ic"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/iv_favorite"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/red" />
 
@@ -35,8 +36,22 @@
         android:layout_margin="8dp"
         android:src="@drawable/favorite_ic"
         app:layout_constraintEnd_toStartOf="@id/iv_location"
+        app:layout_constraintStart_toEndOf="@id/iv_current_location"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/gray" />
+
+    <ImageView
+        android:id="@+id/iv_current_location"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_margin="8dp"
+        android:src="@drawable/current_location_ic"
+        app:layout_constraintEnd_toStartOf="@id/iv_favorite"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/dark_blue" />
 
 
     <androidx.cardview.widget.CardView

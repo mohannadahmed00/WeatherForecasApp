@@ -12,7 +12,7 @@ data class ForecastModel(
     val daily: List<Daily>,
     val hourly: List<Hourly>,
     var isCurrent:Boolean= false,
-    val isFavorite:Boolean = false,
+    var isFavorite:Boolean = false,
     //val minutely: List<Minutely>,
 
 )

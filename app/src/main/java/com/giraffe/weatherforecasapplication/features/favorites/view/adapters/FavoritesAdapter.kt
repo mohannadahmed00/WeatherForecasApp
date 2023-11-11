@@ -16,7 +16,7 @@ class FavoritesAdapter(private val list: MutableList<ForecastModel>,private val 
 
     inner class FavoriteVH(private val binding: FavoriteItemBinding) : ViewHolder(binding.root) {
         fun bind(item: ForecastModel) {
-            binding.tvZone.text = item.timezone.split("/")[1]
+            binding.tvZone.text = item.timezone
             Glide.with(binding.root.context)
                 .load("https://openweathermap.org/img/wn/${item.current.weather[0].icon}.png")
                 .into(binding.ivWeather)

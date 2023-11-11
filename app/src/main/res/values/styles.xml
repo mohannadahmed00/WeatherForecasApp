@@ -24,6 +24,12 @@
         <item name="android:textColor">@color/toggle_selector</item>
         <item name="backgroundTint">@color/white</item>
         <item name="rippleColor">@color/ripple_selector</item>
+    </style>
 
+    <style name="button_style" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">5dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">@color/red</item>
+        <item name="rippleColor">@color/ripple_selector</item>
     </style>
 </resources>
