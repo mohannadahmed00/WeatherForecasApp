@@ -16,7 +16,6 @@ import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
 import com.giraffe.weatherforecasapplication.databinding.FragmentFavoritesBinding
 import com.giraffe.weatherforecasapplication.features.favorites.view.adapters.FavoritesAdapter
 import com.giraffe.weatherforecasapplication.features.favorites.viewmodel.FavoritesVM
-import com.giraffe.weatherforecasapplication.features.home.view.HomeFragment
 import com.giraffe.weatherforecasapplication.model.ForecastModel
 import com.giraffe.weatherforecasapplication.model.repo.Repo
 import com.giraffe.weatherforecasapplication.network.ApiClient

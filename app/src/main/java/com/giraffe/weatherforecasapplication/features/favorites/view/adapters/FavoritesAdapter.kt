@@ -18,9 +18,9 @@ class FavoritesAdapter(private val list: MutableList<ForecastModel>,private val 
         fun bind(item: ForecastModel) {
             binding.tvZone.text = item.timezone
             Glide.with(binding.root.context)
-                .load("https://openweathermap.org/img/wn/${item.current.weather[0].icon}.png")
+                .load("https://openweathermap.org/img/wn/${item.current?.weather?.get(0)?.icon}.png")
                 .into(binding.ivWeather)
-            binding.tvDes.text = item.current.weather[0].description
+            binding.tvDes.text = item.current?.weather?.get(0)?.description ?: "no description"
             binding.ivDelete.setOnClickListener { onDeleteClick.onDeleteClick(item) }
             binding.root.setOnClickListener{
                 onSelectClick.onSelectClick(item)

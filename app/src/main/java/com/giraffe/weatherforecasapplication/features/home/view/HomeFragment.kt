@@ -161,21 +161,21 @@ class HomeFragment : Fragment() {
         selectedForecast = forecast
         val current = forecast.current
         binding.tvZone.text = forecast.timezone
-        binding.tvCurrentTemp.text = convertTempToString(current.temp, tempUnit)
+        binding.tvCurrentTemp.text = convertTempToString(current?.temp?:0.0, tempUnit)
         Glide.with(requireContext())
-            .load("https://openweathermap.org/img/wn/${current.weather.get(0).icon}.png")
+            .load("https://openweathermap.org/img/wn/${current?.weather?.get(0)?.icon}.png")
             .into(binding.ivCurrent)
         binding.tvCurrentDes.text =
-            current.weather[0].description
+            current?.weather?.get(0)?.description?:"no description"
         binding.tvCurrentTimeDate.text =
             getCurrentUTCTime(forecast.timezone_offset)
         binding.tvWind.text =
-            convertWindSpeedToString(current.wind_speed ?: 0.0, windSpeedUnit)
-        binding.tvHumidity.text = current.humidity.toString().plus(" %")
-        binding.tvPressure.text = current.pressure.toString().plus(" hPa")
-        binding.tvUv.text = "UV index ".plus(current.uvi.toString())
-        binding.tvCloudiness.text = current.clouds.toString().plus(" %")
-        binding.tvDir.text = current.wind_deg.toString().plus("°")
+            convertWindSpeedToString(current?.wind_speed ?: 0.0, windSpeedUnit)
+        binding.tvHumidity.text = (current?.humidity?:0.0).toString().plus(" %")
+        binding.tvPressure.text = (current?.pressure?:0.0).toString().plus(" hPa")
+        binding.tvUv.text = "UV index ".plus((current?.uvi?:0.0).toString())
+        binding.tvCloudiness.text = (current?.clouds?:0.0).toString().plus(" %")
+        binding.tvDir.text = (current?.wind_deg?:0.0).toString().plus("°")
         dailyAdapter.updateList(forecast.daily)
         hourlyAdapter.updateList(forecast.hourly.take(24))
         handleFavoriteIcon(forecast, favorites)

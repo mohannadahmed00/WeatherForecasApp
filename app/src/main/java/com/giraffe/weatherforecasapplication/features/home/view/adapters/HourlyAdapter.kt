@@ -6,9 +6,7 @@ import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.giraffe.weatherforecasapplication.R
-import com.giraffe.weatherforecasapplication.databinding.DailyItemBinding
 import com.giraffe.weatherforecasapplication.databinding.HourlyItemBinding
-import com.giraffe.weatherforecasapplication.model.Daily
 import com.giraffe.weatherforecasapplication.model.Hourly
 import com.giraffe.weatherforecasapplication.utils.Constants
 import com.giraffe.weatherforecasapplication.utils.toFahrenheit
