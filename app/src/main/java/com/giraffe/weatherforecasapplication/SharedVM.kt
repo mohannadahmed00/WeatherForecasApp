@@ -71,6 +71,5 @@ class SharedVM(val repo: RepoInterface) : ViewModel() {
         viewModelScope.launch {
             _selectedForecast.emit(UiState.Success(forecast))
         }
-        Log.i(HomeFragment.TAG, "setFav: ${_selectedForecast.value}")
     }
 }

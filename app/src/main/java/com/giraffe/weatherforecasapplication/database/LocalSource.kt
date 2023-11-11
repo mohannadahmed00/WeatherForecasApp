@@ -7,9 +7,11 @@ import kotlinx.coroutines.flow.SharedFlow
 
 interface LocalSource {
     suspend fun getAllFavorites():List<ForecastModel>
+    suspend fun getCurrent():ForecastModel?
     suspend fun insertForecast(forecast: ForecastModel):Long
     suspend fun deleteAllForecasts()
     suspend fun deleteForecast(forecast: ForecastModel):Int
+    suspend fun deleteCurrent()
 
 
 

@@ -64,11 +64,11 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnDeleteClick,FavoritesAda
             viewModel.favorites.collect {
                 when (it) {
                     is UiState.Fail -> {
-                        Log.e(HomeFragment.TAG, "fail: ${it.error}")
+                        Log.e(TAG, "fail: ${it.error}")
                     }
 
                     UiState.Loading -> {
-                        Log.d(HomeFragment.TAG, "loading: ")
+                        Log.d(TAG, "loading: ")
                     }
 
                     is UiState.Success -> {
@@ -81,15 +81,15 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnDeleteClick,FavoritesAda
             viewModel.deletion.collect {
                 when (it) {
                     is UiState.Fail -> {
-                        Log.e(HomeFragment.TAG, "fail: ${it.error}")
+                        Log.e(TAG, "fail: ${it.error}")
                     }
 
                     UiState.Loading -> {
-                        Log.d(HomeFragment.TAG, "loading: ")
+                        Log.d(TAG, "loading: ")
                     }
 
                     is UiState.Success -> {
-                        Log.d(HomeFragment.TAG, "deletion success: ")
+                        Log.d(TAG, "deletion success: ")
                         viewModel.getFavorites()
                     }
                 }

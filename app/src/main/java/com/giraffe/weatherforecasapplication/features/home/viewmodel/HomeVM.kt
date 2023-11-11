@@ -22,41 +22,35 @@ import retrofit2.Call
 import retrofit2.Response
 
 class HomeVM(private val repo: RepoInterface) : ViewModel() {
-    private val _forecast =
-        MutableStateFlow<UiState<ForecastModel?>>(UiState.Loading)//<Response<ForecastModel>>()
+    private val _forecast = MutableStateFlow<UiState<ForecastModel?>>(UiState.Loading)//<Response<ForecastModel>>()
     val forecast: StateFlow<UiState<ForecastModel?>> = _forecast.asStateFlow()
 
 
-    fun getForecast(lat: Double, lon: Double) {
+    fun getForecast(lat: Double, lon: Double,isCurrent: Boolean) {
         _forecast.value = UiState.Loading
-
         viewModelScope.launch {
-            repo.getForecast(lat, lon)
+            repo.getForecast(lat, lon,isCurrent)
                 .catch {
                     _forecast.emit(UiState.Fail(it.message ?: "unknown error"))
                 }
                 .collect {
                     _forecast.emit(it)
                 }
-            /*if (response.isSuccessful) {
-                _forecast.emit(UiState.Success(response.body()))
-            } else {
-                _forecast.emit(UiState.Fail(response.message() ?: "unknown error"))
-            }*/
-            /*repo.getForecast(lat,lon)
-                .catch { _forecast.emit(UiState.Fail(it.message?:"unknown error")) }
-                .collect{
-                    if (it.isSuccessful){
-                        _forecast.emit(UiState.Success(it.body()))
-                    }else{
-                        _forecast.emit(UiState.Fail(it.message()?:"unknown error"))
-                    }
-                }*/
-            //_forecast.emit(repo.getForecast(lat,lon))
         }
-
-
     }
+    fun getCurrentForecast(){
+        _forecast.value = UiState.Loading
+        viewModelScope.launch {
+            repo.getCurrent()
+                .catch {
+                    _forecast.emit(UiState.Fail(it.message ?: "unknown error"))
+                }
+                .collect {
+                    _forecast.emit(it)
+                }
+        }
+    }
+
 
     fun insertForecast(forecast: ForecastModel) {
         viewModelScope.launch(Dispatchers.IO) {

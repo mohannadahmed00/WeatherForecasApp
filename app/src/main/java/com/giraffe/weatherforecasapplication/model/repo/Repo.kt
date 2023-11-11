@@ -40,12 +40,20 @@ class Repo private constructor(
         }
     }
 
-    override suspend fun getForecast(lat: Double, lon: Double): Flow<UiState<ForecastModel?>> {
+    override suspend fun getForecast(lat: Double, lon: Double,isCurrent: Boolean): Flow<UiState<ForecastModel?>> {
         return flow {
             try {
                 val response = remoteSource.getForecast(lat, lon)
                 if (response.isSuccessful) {
-                    emit(UiState.Success(response.body()))
+                    val f = response.body()
+                    f?.apply {
+                        this.isCurrent = isCurrent
+                        if (isCurrent){
+                            deleteCurrent()
+                            insertForecast(f)
+                        }
+                    }
+                    emit(UiState.Success(f))
                 } else {
                     emit(UiState.Fail(response.message()))
                 }
@@ -71,8 +79,23 @@ class Repo private constructor(
         }.onStart { UiState.Loading }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun insertForecast(forecast: ForecastModel) =
-        localSource.insertForecast(forecast)
+    override suspend fun insertForecast(forecast: ForecastModel) = localSource.insertForecast(forecast)
+    override suspend fun deleteCurrent() = localSource.deleteCurrent()
+    override suspend fun getCurrent() : Flow<UiState<ForecastModel?>>{
+        return flow {
+            try {
+                val response = localSource.getCurrent()
+                if (response != null) {
+                    emit(UiState.Success(response))
+                } else {
+                    emit(UiState.Fail("no stored current"))
+                }
+            } catch (e: Exception) {
+                emit(UiState.Fail(e.message ?: "unknown error"))
+            }
+        }.onStart { UiState.Loading }.flowOn(Dispatchers.IO)
+        //localSource.getCurrent()
+    }
 
     override suspend fun deleteForecast(forecast: ForecastModel): Flow<UiState<Int>> {
         return flow {
