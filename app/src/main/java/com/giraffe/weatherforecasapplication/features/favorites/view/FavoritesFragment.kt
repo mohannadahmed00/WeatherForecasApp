@@ -22,9 +22,11 @@ import com.giraffe.weatherforecasapplication.model.repo.Repo
 import com.giraffe.weatherforecasapplication.network.ApiClient
 import com.giraffe.weatherforecasapplication.utils.UiState
 import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
-class FavoritesFragment : Fragment(),FavoritesAdapter.OnDeleteClick,FavoritesAdapter.OnSelectClick {
+class FavoritesFragment : Fragment(), FavoritesAdapter.OnDeleteClick,
+    FavoritesAdapter.OnSelectClick {
     companion object {
         const val TAG = "FavoritesFragment"
     }
@@ -35,12 +37,14 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnDeleteClick,FavoritesAda
     private lateinit var onDrawerClick: OnDrawerClick
     private lateinit var adapter: FavoritesAdapter
     private lateinit var sharedVM: SharedVM
+    private var tempForecast: ForecastModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        factory = ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
+        factory =
+            ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
         viewModel = ViewModelProvider(this, factory)[FavoritesVM::class.java]
         sharedVM = ViewModelProvider(requireActivity(), factory)[SharedVM::class.java]
-        adapter = FavoritesAdapter(mutableListOf(),this,this)
+        adapter = FavoritesAdapter(mutableListOf(), this, this)
         viewModel.getFavorites()
 
     }
@@ -78,6 +82,21 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnDeleteClick,FavoritesAda
             }
         }
         lifecycleScope.launch {
+            viewModel.insert.collect{
+                when(it){
+                    is UiState.Fail -> {
+
+                    }
+                    UiState.Loading -> {
+
+                    }
+                    is UiState.Success -> {
+                        viewModel.getFavorites()
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
             viewModel.deletion.collect {
                 when (it) {
                     is UiState.Fail -> {
@@ -91,6 +110,18 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnDeleteClick,FavoritesAda
                     is UiState.Success -> {
                         Log.d(TAG, "deletion success: ")
                         viewModel.getFavorites()
+                        Snackbar.make(
+                            requireView(),
+                            "the location has been deleted",
+                            Snackbar.LENGTH_LONG
+                        )
+                            .setAction("Undo") {
+                                tempForecast?.let { temp ->
+                                    viewModel.insertForecast(temp)
+                                }
+                            }
+                            .show()
+
                     }
                 }
             }
@@ -99,6 +130,7 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnDeleteClick,FavoritesAda
     }
 
     override fun onDeleteClick(forecast: ForecastModel) {
+        tempForecast = forecast
         viewModel.deleteFavorite(forecast)
     }
 

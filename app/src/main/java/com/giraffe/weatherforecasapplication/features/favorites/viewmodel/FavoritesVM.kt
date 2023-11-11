@@ -47,4 +47,17 @@ class FavoritesVM(private val repo: RepoInterface) : ViewModel() {
                 }
         }
     }
+
+
+    private val _insert = MutableStateFlow<UiState<Long>>(UiState.Loading)
+    val insert: StateFlow<UiState<Long>> = _insert.asStateFlow()
+    fun insertForecast(forecast: ForecastModel) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.insertForecast(forecast)
+                .catch { emit(UiState.Fail(it.message ?: "unknown error")) }
+                .collect {
+                    _insert.emit(it)
+                }
+        }
+    }
 }
