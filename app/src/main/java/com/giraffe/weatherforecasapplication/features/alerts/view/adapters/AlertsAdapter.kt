@@ -48,4 +48,9 @@ class AlertsAdapter(val list: MutableList<AlertItem>) : Adapter<AlertsAdapter.Al
     override fun getItemCount() = list.size
 
     override fun onBindViewHolder(holder: AlertsVH, position: Int) = holder.bind(list[position])
+
+    fun removeItem(position: Int) {
+        list.removeAt(position)
+        notifyItemRemoved(position)
+    }
 }

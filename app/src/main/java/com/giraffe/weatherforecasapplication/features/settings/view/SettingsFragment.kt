@@ -1,5 +1,9 @@
 package com.giraffe.weatherforecasapplication.features.settings.view
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +12,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.giraffe.weatherforecasapplication.MainActivity
 import com.giraffe.weatherforecasapplication.OnDrawerClick
 import com.giraffe.weatherforecasapplication.R
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
@@ -18,6 +23,7 @@ import com.giraffe.weatherforecasapplication.network.ApiClient
 import com.giraffe.weatherforecasapplication.utils.Constants
 import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class SettingsFragment : Fragment() {
     companion object {
@@ -125,11 +131,15 @@ class SettingsFragment : Fragment() {
                     R.id.btn_ar -> {
                         Log.d(TAG, "select: ${Constants.Languages.ARABIC}")
                         viewModel.setLanguage(Constants.Languages.ARABIC)
+                        setLocale(requireActivity(), "ar")
+                        refresh()
                     }
 
                     R.id.btn_en -> {
                         Log.d(TAG, "select: ${Constants.Languages.ENGLISH}")
                         viewModel.setLanguage(Constants.Languages.ENGLISH)
+                        setLocale(requireActivity(), "en")
+                        refresh()
                     }
                 }
             }
@@ -183,5 +193,22 @@ class SettingsFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun setLocale(context: Context, languageCode: String) {
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.locale = locale
+        @Suppress("DEPRECATION")
+        context.resources.updateConfiguration(
+            config,
+            context.resources.displayMetrics
+        )
+    }
+
+    private fun refresh(){
+        requireActivity().finish()
+        startActivity(Intent(requireActivity(),MainActivity::class.java))
     }
 }

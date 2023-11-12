@@ -56,8 +56,10 @@ class AlertsFragment : Fragment(),BottomSheet.OnBottomSheetDismiss {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
                 val position = viewHolder.adapterPosition
-                viewModel.deleteAlert(adapter.list[position].id)
                 cancelAlarm(adapter.list[position].id)
+                viewModel.deleteAlert(adapter.list[position].id)
+                adapter.removeItem(position)
+
             }
         }
         itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
@@ -77,12 +79,10 @@ class AlertsFragment : Fragment(),BottomSheet.OnBottomSheetDismiss {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.i(TAG, "onViewCreated: ")
         super.onViewCreated(view, savedInstanceState)
-
         binding.rvAlerts.adapter = adapter
         itemTouchHelper.attachToRecyclerView(binding.rvAlerts)
         observeAlerts()
         viewModel.getAlerts()
-
         binding.btnAddAlert.setOnClickListener {
             val bottomSheet = BottomSheet(this)
             bottomSheet.show(childFragmentManager,BottomSheet.TAG)

@@ -42,7 +42,6 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
     companion object {
         const val TAG = "BottomSheetFragment"
         const val REQUEST_CODE = 1001
-
     }
 
 
