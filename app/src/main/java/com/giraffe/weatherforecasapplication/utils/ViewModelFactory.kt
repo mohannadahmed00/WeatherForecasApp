@@ -3,6 +3,7 @@ package com.giraffe.weatherforecasapplication.utils
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.giraffe.weatherforecasapplication.SharedVM
+import com.giraffe.weatherforecasapplication.features.alerts.bottomsheet.viewmodel.BottomSheetVM
 import com.giraffe.weatherforecasapplication.features.alerts.viewmodel.AlertsVM
 import com.giraffe.weatherforecasapplication.features.favorites.viewmodel.FavoritesVM
 import com.giraffe.weatherforecasapplication.features.home.viewmodel.HomeVM
@@ -25,7 +26,10 @@ class ViewModelFactory(private val repo: RepoInterface) : ViewModelProvider.Fact
             MapVM(repo) as T
         }else if (modelClass.isAssignableFrom(SharedVM::class.java)) {
             SharedVM(repo) as T
-        } else {
+        }else if (modelClass.isAssignableFrom(BottomSheetVM::class.java)) {
+            BottomSheetVM(repo) as T
+        }
+        else {
             throw IllegalArgumentException("can't create ${modelClass.simpleName}")
         }
     }

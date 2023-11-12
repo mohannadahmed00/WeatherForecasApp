@@ -1,7 +1,8 @@
 package com.giraffe.weatherforecasapplication.database
 
 import android.content.Context
-import com.giraffe.weatherforecasapplication.model.ForecastModel
+import com.giraffe.weatherforecasapplication.model.alert.AlertItem
+import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import com.giraffe.weatherforecasapplication.utils.Constants
 import com.giraffe.weatherforecasapplication.utils.getAddress
 
@@ -18,6 +19,11 @@ class ConcreteLocalSource(val context: Context) : LocalSource {
     override suspend fun deleteAllForecasts() = dao.deleteAllFavForecasts()
     override suspend fun deleteForecast(forecast: ForecastModel) = dao.deleteForecast(forecast)
     override suspend fun deleteCurrent() = dao.deleteCurrent()
+    override suspend fun getAllAlerts() = dao.getAllAlerts()
+
+    override suspend fun insertAlert(alertItem: AlertItem) = dao.insertAlert(alertItem)
+
+    override suspend fun deleteAlert(alertId: Int) = dao.deleteAlert(alertId)
 
     override suspend fun getLanguage(): String {
         return shared.read(Constants.LANGUAGE) ?: Constants.Languages.ENGLISH.apply {

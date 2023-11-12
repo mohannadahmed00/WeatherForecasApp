@@ -32,4 +32,8 @@
         <item name="backgroundTint">@color/red</item>
         <item name="rippleColor">@color/ripple_selector</item>
     </style>
+
+    <style name="floating_button_style" parent="ShapeAppearanceOverlay.Material3.FloatingActionButton">
+        <item name="android:iconTint">@color/yellow</item>
+    </style>
 </resources>

@@ -1,21 +1,34 @@
 package com.giraffe.weatherforecasapplication.database
 
 import androidx.room.TypeConverter
-import com.giraffe.weatherforecasapplication.model.Current
-import com.giraffe.weatherforecasapplication.model.Daily
-import com.giraffe.weatherforecasapplication.model.Hourly
-import com.giraffe.weatherforecasapplication.model.Minutely
+import com.giraffe.weatherforecasapplication.model.forecast.Current
+import com.giraffe.weatherforecasapplication.model.forecast.Daily
+import com.giraffe.weatherforecasapplication.model.forecast.Hourly
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.time.LocalDateTime
 
 class Converters {
+
+    @TypeConverter
+    fun fromDateTime(dateTime: LocalDateTime?): String {
+        return dateTime.toString()
+    }
+    @TypeConverter
+    fun toDateTime(dateString: String): LocalDateTime? {
+        if (dateString=="null"){
+            return null
+        }
+        return LocalDateTime.parse(dateString)
+    }
+
     @TypeConverter
     fun fromCurrent(current: Current): String {
         return Gson().toJson(current)
     }
     @TypeConverter
     fun toCurrent(json: String): Current {
-        return Gson().fromJson(json,Current::class.java)
+        return Gson().fromJson(json, Current::class.java)
     }
 
     @TypeConverter

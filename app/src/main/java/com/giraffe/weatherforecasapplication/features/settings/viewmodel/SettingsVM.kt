@@ -2,10 +2,8 @@ package com.giraffe.weatherforecasapplication.features.settings.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.giraffe.weatherforecasapplication.model.ForecastModel
 import com.giraffe.weatherforecasapplication.model.repo.RepoInterface
 import com.giraffe.weatherforecasapplication.utils.Constants
-import com.giraffe.weatherforecasapplication.utils.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

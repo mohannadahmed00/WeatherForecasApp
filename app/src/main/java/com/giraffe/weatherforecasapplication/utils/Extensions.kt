@@ -20,6 +20,6 @@ fun getAddress(context: Context, latitude: Double, longitude: Double): String {
     return if (!address.isNullOrEmpty()) {
         "${address[0].adminArea}, ${address[0].countryName}"
     } else {
-        "unknown area"
+        Constants.UNKNOWN_AREA
     }
 }

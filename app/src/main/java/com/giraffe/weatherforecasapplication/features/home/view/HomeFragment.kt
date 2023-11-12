@@ -30,7 +30,7 @@ import com.giraffe.weatherforecasapplication.databinding.FragmentHomeBinding
 import com.giraffe.weatherforecasapplication.features.home.view.adapters.DailyAdapter
 import com.giraffe.weatherforecasapplication.features.home.view.adapters.HourlyAdapter
 import com.giraffe.weatherforecasapplication.features.home.viewmodel.HomeVM
-import com.giraffe.weatherforecasapplication.model.ForecastModel
+import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import com.giraffe.weatherforecasapplication.model.repo.Repo
 import com.giraffe.weatherforecasapplication.network.ApiClient
 import com.giraffe.weatherforecasapplication.utils.Constants
@@ -101,6 +101,7 @@ class HomeFragment : Fragment() {
         observeWindSpeedUnit()
         handleInit()
         observeSelectedForecast()
+        observeForecast()
         handleClicks()
     }
 
@@ -130,9 +131,14 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch {
             viewModel.forecast.collect {
                 when (it) {
-                    is UiState.Fail -> {}
-                    UiState.Loading -> {}
+                    is UiState.Fail -> {
+                        Log.e(TAG, "Fail forecast: ${it.error}")
+                    }
+                    UiState.Loading -> {
+                        Log.d(TAG, "Loading forecast:")
+                    }
                     is UiState.Success -> {
+                        Log.d(TAG, "${it.data}")
                         sharedVM.selectForecast(it.data)
                     }
                 }
@@ -149,7 +155,7 @@ class HomeFragment : Fragment() {
                     } else {
                         viewModel.getCurrentForecast()
                     }
-                    observeForecast()
+                    //observeForecast()
                 } else {
                     handleForecastUI(it)
                 }
@@ -294,7 +300,7 @@ class HomeFragment : Fragment() {
             } else {
                 viewModel.getCurrentForecast()
             }
-            observeForecast()
+            //observeForecast()
         }
     }
 
@@ -319,16 +325,19 @@ class HomeFragment : Fragment() {
 
 
     private val locationCallback: LocationCallback = object : LocationCallback() {
+
         override fun onLocationResult(locationResult: LocationResult) {
             location = locationResult.lastLocation
             currentLat = location?.latitude ?: 0.0
             currentLon = location?.longitude ?: 0.0
+            Log.i(TAG, "onLocationResult: $currentLat , $currentLon ")
             viewModel.getForecast(currentLat, currentLon, true)
             fusedLocationProviderClient.removeLocationUpdates(this)
         }
     }
 
     private fun getLocation() {
+        Log.i(TAG, "getLocation: ")
         if (checkPermissions()) {
             if (isLocationEnabled()) {
                 requestNewLocationData()
@@ -383,6 +392,7 @@ class HomeFragment : Fragment() {
 
     @SuppressLint("MissingPermission")
     private fun requestNewLocationData() {
+        Log.i(TAG, "requestNewLocationData: ")
         val locationRequest = LocationRequest().apply {
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             interval = 0

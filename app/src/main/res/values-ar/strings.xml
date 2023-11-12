@@ -18,4 +18,11 @@
     <string name="notifications">Notifications</string>
     <string name="temperature_unit">Temperature Unit</string>
     <string name="confirm">Confirm</string>
+    <string name="notification">Notification</string>
+    <string name="alarm">Alarm</string>
+    <string name="alert_type">Alert type:</string>
+    <string name="start_date_and_time">Start Date and Time:</string>
+    <string name="end_date_and_time">End Date and Time:</string>
+    <string name="select_start_date_and_time">Select start date and time</string>
+    <string name="select_end_date_and_time_optional">Select end date and time (optional)</string>
 </resources>

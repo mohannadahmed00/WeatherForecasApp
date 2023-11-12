@@ -2,7 +2,7 @@ package com.giraffe.weatherforecasapplication.features.favorites.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.giraffe.weatherforecasapplication.model.ForecastModel
+import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import com.giraffe.weatherforecasapplication.model.repo.RepoInterface
 import com.giraffe.weatherforecasapplication.utils.UiState
 import kotlinx.coroutines.Dispatchers

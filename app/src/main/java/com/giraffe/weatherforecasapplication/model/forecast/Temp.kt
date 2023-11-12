@@ -1,4 +1,4 @@
-package com.giraffe.weatherforecasapplication.model
+package com.giraffe.weatherforecasapplication.model.forecast
 
 data class Temp(
     val day: Double,

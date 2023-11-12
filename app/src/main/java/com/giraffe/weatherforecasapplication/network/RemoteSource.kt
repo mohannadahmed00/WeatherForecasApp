@@ -1,7 +1,6 @@
 package com.giraffe.weatherforecasapplication.network
 
-import com.giraffe.weatherforecasapplication.model.ForecastModel
-import kotlinx.coroutines.flow.Flow
+import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import retrofit2.Response
 
 interface RemoteSource {

@@ -1,29 +1,16 @@
 package com.giraffe.weatherforecasapplication.features.home.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.giraffe.weatherforecasapplication.database.SharedHelper
-import com.giraffe.weatherforecasapplication.model.ForecastModel
+import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import com.giraffe.weatherforecasapplication.model.repo.RepoInterface
-import com.giraffe.weatherforecasapplication.utils.Constants
 import com.giraffe.weatherforecasapplication.utils.UiState
-import com.google.android.gms.common.api.Api
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Response
 
 class HomeVM(private val repo: RepoInterface) : ViewModel() {
     private val _forecast =

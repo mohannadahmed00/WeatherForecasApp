@@ -11,7 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import com.giraffe.weatherforecasapplication.OnDrawerClick
 import com.giraffe.weatherforecasapplication.R
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
-import com.giraffe.weatherforecasapplication.database.SharedHelper
 import com.giraffe.weatherforecasapplication.databinding.FragmentSettingsBinding
 import com.giraffe.weatherforecasapplication.features.settings.viewmodel.SettingsVM
 import com.giraffe.weatherforecasapplication.model.repo.Repo

@@ -1,7 +1,8 @@
 package com.giraffe.weatherforecasapplication.model.repo
 
-import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
-import com.giraffe.weatherforecasapplication.model.ForecastModel
+import com.giraffe.weatherforecasapplication.database.LocalSource
+import com.giraffe.weatherforecasapplication.model.alert.AlertItem
+import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import com.giraffe.weatherforecasapplication.network.RemoteSource
 import com.giraffe.weatherforecasapplication.utils.UiState
 import kotlinx.coroutines.Dispatchers
@@ -12,12 +13,12 @@ import kotlinx.coroutines.flow.onStart
 
 class Repo private constructor(
     private val remoteSource: RemoteSource,
-    private val localSource: ConcreteLocalSource
+    private val localSource: LocalSource
 ) : RepoInterface {
     companion object {
         @Volatile
         private var INSTANCE: Repo? = null
-        fun getInstance(remoteSource: RemoteSource, localSource: ConcreteLocalSource): Repo {
+        fun getInstance(remoteSource: RemoteSource, localSource: LocalSource): Repo {
             return INSTANCE ?: synchronized(this) {
                 val instance = Repo(remoteSource, localSource)
                 INSTANCE = instance
@@ -99,8 +100,34 @@ class Repo private constructor(
                 emit(UiState.Fail(e.message ?: "unknown error"))
             }
         }.onStart { UiState.Loading }.flowOn(Dispatchers.IO)
-        //localSource.getCurrent()
     }
+
+    override suspend fun getAllAlerts(): Flow<UiState<List<AlertItem>>> {
+        return flow {
+            try {
+                val response = localSource.getAllAlerts()
+                emit(UiState.Success(response))
+            } catch (e: Exception) {
+                emit(UiState.Fail(e.message ?: "unknown error"))
+            }
+        }.onStart { UiState.Loading }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun insertAlert(alertItem: AlertItem): Flow<UiState<Long>> {
+        return flow {
+            try {
+                val response = localSource.insertAlert(alertItem)
+                emit(UiState.Success(response))
+            } catch (e: Exception) {
+                emit(UiState.Fail(e.message ?: "unknown error"))
+            }
+        }.onStart { UiState.Loading }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun deleteAlert(alertId: Int) {
+        localSource.deleteAlert(alertId)
+    }
+
 
     override suspend fun deleteForecast(forecast: ForecastModel): Flow<UiState<Int>> {
         return flow {

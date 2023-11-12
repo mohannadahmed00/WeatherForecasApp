@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.giraffe.weatherforecasapplication.R
 import com.giraffe.weatherforecasapplication.databinding.DailyItemBinding
-import com.giraffe.weatherforecasapplication.model.Daily
+import com.giraffe.weatherforecasapplication.model.forecast.Daily
 import com.giraffe.weatherforecasapplication.utils.Constants
 import com.giraffe.weatherforecasapplication.utils.toFahrenheit
 import com.giraffe.weatherforecasapplication.utils.toKelvin
@@ -16,7 +16,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class DailyAdapter(private val list: MutableList<Daily>,val tempUnit:String) : Adapter<DailyAdapter.DailyVH>() {
+class DailyAdapter(private val list: MutableList<Daily>, val tempUnit:String) : Adapter<DailyAdapter.DailyVH>() {
 
     inner class DailyVH(private val binding: DailyItemBinding) : ViewHolder(binding.root) {
         fun bind(item: Daily) {

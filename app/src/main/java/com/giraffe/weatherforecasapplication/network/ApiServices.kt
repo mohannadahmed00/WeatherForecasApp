@@ -1,6 +1,6 @@
 package com.giraffe.weatherforecasapplication.network
 
-import com.giraffe.weatherforecasapplication.model.ForecastModel
+import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

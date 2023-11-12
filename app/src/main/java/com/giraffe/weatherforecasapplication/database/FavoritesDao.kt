@@ -6,9 +6,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.giraffe.weatherforecasapplication.model.ForecastModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
+import com.giraffe.weatherforecasapplication.model.alert.AlertItem
+import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 
 @Dao
 interface FavoritesDao {
@@ -28,4 +27,13 @@ interface FavoritesDao {
     suspend fun deleteCurrent()
     @Update
     suspend fun updateForecast(forecast: ForecastModel)
+
+    @Query("SELECT * FROM alert_table")
+    fun getAllAlerts(): List<AlertItem>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAlert(alertItem: AlertItem):Long
+
+    @Query("DELETE FROM alert_table Where id = :alertId")
+    suspend fun deleteAlert(alertId: Int)
 }

@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.giraffe.weatherforecasapplication"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -50,6 +50,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("androidx.test.ext:junit-ktx:1.1.5")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -77,4 +78,21 @@ dependencies {
     //navigation
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
+
+    //swiperefresh
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    //truth
+    testImplementation("com.google.truth:truth:1.1.3")
+
+    //worker
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+
+
+    testImplementation("androidx.test:core-ktx:1.5.0")
+    testImplementation("androidx.test.ext:junit-ktx:1.1.5")
+    testImplementation ("org.robolectric:robolectric:4.8")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
 }

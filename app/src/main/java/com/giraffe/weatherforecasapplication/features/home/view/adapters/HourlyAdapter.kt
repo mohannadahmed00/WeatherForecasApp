@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.giraffe.weatherforecasapplication.R
 import com.giraffe.weatherforecasapplication.databinding.HourlyItemBinding
-import com.giraffe.weatherforecasapplication.model.Hourly
+import com.giraffe.weatherforecasapplication.model.forecast.Hourly
 import com.giraffe.weatherforecasapplication.utils.Constants
 import com.giraffe.weatherforecasapplication.utils.toFahrenheit
 import com.giraffe.weatherforecasapplication.utils.toKelvin
@@ -16,7 +16,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class HourlyAdapter(private val list: MutableList<Hourly>,val tempUnit:String) : Adapter<HourlyAdapter.HourlyVH>() {
+class HourlyAdapter(private val list: MutableList<Hourly>, val tempUnit:String) : Adapter<HourlyAdapter.HourlyVH>() {
 
     inner class HourlyVH(private val binding: HourlyItemBinding) : ViewHolder(binding.root) {
         fun bind(item: Hourly) {
