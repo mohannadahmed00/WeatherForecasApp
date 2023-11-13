@@ -30,5 +30,12 @@
     <string name="the_temperature_now_is">the temperature now is %1$s</string>
     <string name="at">at: %1$s</string>
     <string name="from_to">from: %1$s\nto: %2$s</string>
+    <string name="cloudiness">cloudiness</string>
+    <string name="wind_direction">wind direction</string>
+    <string name="pressure">pressure</string>
+    <string name="uv">UV</string>
+    <string name="humidity">humidity</string>
+    <string name="wind">wind</string>
+    <string name="make_sure_you_are_connected_to_the_internet">Make sure you are connected to the Internet</string>
 
 </resources>

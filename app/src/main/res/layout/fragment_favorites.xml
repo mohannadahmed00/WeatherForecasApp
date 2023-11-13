@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".features.favorites.view.FavoritesFragment">
 
     <ImageView
@@ -23,9 +23,9 @@
         android:layout_height="wrap_content"
         android:text="@string/favorites"
         android:textColor="@color/gray"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/iv_more"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/iv_more" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -33,11 +33,53 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
+        android:visibility="invisible"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_favorites"
         tools:listitem="@layout/favorite_item" />
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/items_shimmer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_favorites">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include layout="@layout/rec_item_place_holder" />
+
+            <include layout="@layout/rec_item_place_holder" />
+
+            <include layout="@layout/rec_item_place_holder" />
+
+            <include layout="@layout/rec_item_place_holder" />
+
+            <include layout="@layout/rec_item_place_holder" />
+
+            <include layout="@layout/rec_item_place_holder" />
+
+            <include layout="@layout/rec_item_place_holder" />
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <ImageView
+        android:id="@+id/iv_wrong"
+        android:src="@drawable/wrong"
+        android:layout_width="match_parent"
+        android:visibility="invisible"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_favorites"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

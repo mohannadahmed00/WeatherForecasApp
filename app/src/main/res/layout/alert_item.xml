@@ -4,37 +4,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginTop="8dp"
     app:cardCornerRadius="5dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:orientation="horizontal"
-
-        android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/tv_location"
-        android:layout_weight="1"
-        style="@style/text_withe_bold_16"
-        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="8dp"
-        android:textColor="@color/red"
-        tools:text="cairo" />
+        android:padding="18dp">
+
+        <TextView
+            android:id="@+id/tv_location"
+            style="@style/text_withe_20"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:textStyle="normal"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintBottom_toTopOf="@id/tv_time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Cairo" />
 
         <TextView
             android:id="@+id/tv_time"
-            android:layout_weight="1"
             style="@style/text_withe_bold_16"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginVertical="8dp"
-            android:textColor="@color/gray"
-            android:gravity="end"
-            tools:text="cairo" />
-    </LinearLayout>
+            android:textColor="@color/red"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/tv_location"
+            app:layout_constraintStart_toStartOf="@+id/tv_location"
+            app:layout_constraintTop_toBottomOf="@+id/tv_location"
+            tools:text="Light Rain" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 </androidx.cardview.widget.CardView>

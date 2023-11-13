@@ -7,12 +7,8 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.giraffe.weatherforecasapplication.databinding.FavoriteItemBinding
 import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
 
-class FavoritesAdapter(private val list: MutableList<ForecastModel>, private val onDeleteClick: OnDeleteClick, private val onSelectClick: OnSelectClick) : Adapter<FavoritesAdapter.FavoriteVH>() {
+class FavoritesAdapter(val list: MutableList<ForecastModel>, private val onSelectClick: OnSelectClick) : Adapter<FavoritesAdapter.FavoriteVH>() {
 
     inner class FavoriteVH(private val binding: FavoriteItemBinding) : ViewHolder(binding.root) {
         fun bind(item: ForecastModel) {
@@ -21,17 +17,9 @@ class FavoritesAdapter(private val list: MutableList<ForecastModel>, private val
                 .load("https://openweathermap.org/img/wn/${item.current?.weather?.get(0)?.icon}.png")
                 .into(binding.ivWeather)
             binding.tvDes.text = item.current?.weather?.get(0)?.description ?: "no description"
-            binding.ivDelete.setOnClickListener { onDeleteClick.onDeleteClick(item) }
             binding.root.setOnClickListener{
                 onSelectClick.onSelectClick(item)
             }
-        }
-
-        private fun unixTimeToReadableDate(unixTime: Long): String {
-            val dateFormat = SimpleDateFormat("EEEE", Locale.getDefault())
-            dateFormat.timeZone = TimeZone.getDefault() // Set your desired time zone
-            val date = Date(unixTime * 1000)
-            return dateFormat.format(date)
         }
     }
 
@@ -50,8 +38,10 @@ class FavoritesAdapter(private val list: MutableList<ForecastModel>, private val
 
     override fun onBindViewHolder(holder: FavoriteVH, position: Int) = holder.bind(list[position])
 
-    interface OnDeleteClick{
-        fun onDeleteClick(forecast: ForecastModel)
+
+    fun removeItem(position: Int) {
+        list.removeAt(position)
+        notifyItemRemoved(position)
     }
 
     interface OnSelectClick{

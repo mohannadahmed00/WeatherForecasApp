@@ -1,5 +1,6 @@
 package com.giraffe.weatherforecasapplication.model.repo
 
+import android.util.Log
 import com.giraffe.weatherforecasapplication.database.LocalSource
 import com.giraffe.weatherforecasapplication.model.alert.AlertItem
 import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
@@ -35,20 +36,17 @@ class Repo private constructor(
         return flow {
             try {
                 val response = remoteSource.getForecast(lat, lon)
+                Log.i("messi", "getForecast: ")
                 if (response.isSuccessful) {
-                    val f = response.body()
-                    f?.apply {
-                        this.isCurrent = isCurrent
-                        if (isCurrent) {
-                            deleteCurrent()
-                            insertForecast(f)
-                        }
-                    }
-                    emit(UiState.Success(f))
+                    Log.i("messi", "getForecast: success")
+                    emit(UiState.Success(response.body()))
                 } else {
+                    Log.i("messi", "getForecast: fail ${response.message()}")
                     emit(UiState.Fail(response.message()))
                 }
             } catch (e: Exception) {
+                Log.i("messi", "getForecast: fail ${e.message}")
+
                 emit(UiState.Fail(e.message ?: "unknown error"))
             }
             //remoteSource.getForecast(lat, lon)
@@ -71,15 +69,22 @@ class Repo private constructor(
     }
 
     override suspend fun insertForecast(forecast: ForecastModel): Flow<UiState<Long>> {
+        Log.i("messi", "insertForecast: ")
+
         return flow {
             try {
                 val response = localSource.insertForecast(forecast)
                 if (response>0) {
+                    Log.i("messi", "insertForecast: success")
                     emit(UiState.Success(response))
                 } else {
+                    Log.i("messi", "insertForecast: fail")
+
                     emit(UiState.Fail("fail insertion"))
                 }
             } catch (e: Exception) {
+                Log.i("messi", "insertForecast: fail ${e.message}")
+
                 emit(UiState.Fail(e.message ?: "unknown error"))
             }
         }.onStart { UiState.Loading }.flowOn(Dispatchers.IO)

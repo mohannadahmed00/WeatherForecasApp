@@ -1,66 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:fitsSystemWindows="true"
-    tools:context=".features.home.view.HomeFragment">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <ImageView
         android:id="@+id/iv_more"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_margin="8dp"
-        android:src="@drawable/more_ic"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/red" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/iv_location"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_margin="8dp"
-        android:src="@drawable/location_ic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_favorite"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/red" />
+        />
 
     <ImageView
         android:id="@+id/iv_favorite"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_margin="8dp"
-        android:src="@drawable/favorite_ic"
         app:layout_constraintEnd_toStartOf="@id/iv_location"
         app:layout_constraintStart_toEndOf="@id/iv_current_location"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/light_gray" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/iv_current_location"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_margin="8dp"
-        android:src="@drawable/current_location_ic"
         app:layout_constraintEnd_toStartOf="@id/iv_favorite"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/rose_quartz" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_view_1"
-        android:visibility="invisible"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        app:cardBackgroundColor="@color/blue"
+        app:cardBackgroundColor="@color/light_gray"
         app:cardCornerRadius="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -78,8 +66,7 @@
                 android:gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="cairo" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_current_temp"
@@ -89,8 +76,7 @@
                 android:gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_zone"
-                tools:text="37°C" />
+                app:layout_constraintTop_toBottomOf="@id/tv_zone" />
 
             <ImageView
                 android:id="@+id/iv_current"
@@ -101,8 +87,7 @@
                 app:layout_constraintEnd_toStartOf="@id/tv_current_des"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_current_des"
-                tools:src="@drawable/sun" />
+                app:layout_constraintTop_toTopOf="@id/tv_current_des" />
 
             <TextView
                 android:id="@+id/tv_current_des"
@@ -112,8 +97,7 @@
                 android:gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_current"
-                app:layout_constraintTop_toBottomOf="@id/tv_current_temp"
-                tools:text="clear" />
+                app:layout_constraintTop_toBottomOf="@id/tv_current_temp" />
 
             <TextView
                 android:id="@+id/tv_current_time_date"
@@ -123,8 +107,7 @@
                 android:gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_current_des"
-                tools:text="Sunday, Nov 5, 2023" />
+                app:layout_constraintTop_toBottomOf="@id/tv_current_des"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
@@ -135,16 +118,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:src="@drawable/wind_ic"
+        android:visibility="invisible"
         app:layout_constraintEnd_toStartOf="@id/iv_humidity"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/card_view_1"
-        app:tint="@color/red" />
+        />
 
     <ImageView
         android:id="@+id/iv_humidity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/humidity_ic"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/iv_wind"
         app:layout_constraintEnd_toStartOf="@id/iv_pressure"
         app:layout_constraintStart_toEndOf="@id/iv_wind"
@@ -154,6 +139,7 @@
     <ImageView
         android:id="@+id/iv_pressure"
         android:layout_width="wrap_content"
+        android:visibility="invisible"
         android:layout_height="wrap_content"
         android:src="@drawable/pressure_ic"
         app:layout_constraintBottom_toBottomOf="@+id/iv_humidity"
@@ -167,6 +153,7 @@
         android:id="@+id/iv_uv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="invisible"
         android:layout_marginTop="16dp"
         android:src="@drawable/uv_ic"
         app:layout_constraintEnd_toEndOf="@+id/iv_wind"
@@ -176,6 +163,7 @@
 
     <ImageView
         android:id="@+id/iv_cloudiness"
+        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/cloud_ic"
@@ -188,6 +176,7 @@
     <ImageView
         android:id="@+id/iv_dir"
         android:layout_width="wrap_content"
+        android:visibility="invisible"
         android:layout_height="wrap_content"
         android:src="@drawable/flag_ic"
         app:layout_constraintBottom_toBottomOf="@+id/iv_cloudiness"
@@ -206,7 +195,8 @@
         app:layout_constraintEnd_toEndOf="@+id/iv_wind"
         app:layout_constraintStart_toStartOf="@+id/iv_wind"
         app:layout_constraintTop_toBottomOf="@id/iv_wind"
-        android:text="@string/wind" />
+        android:visibility="invisible"
+        android:text="wind" />
 
     <TextView
         android:id="@+id/tv_humidity"
@@ -218,22 +208,25 @@
         app:layout_constraintEnd_toEndOf="@+id/iv_humidity"
         app:layout_constraintStart_toStartOf="@+id/iv_humidity"
         app:layout_constraintTop_toTopOf="@+id/tv_wind"
-        android:text="@string/humidity" />
+        android:visibility="invisible"
+        android:text="humidity" />
 
     <TextView
         android:id="@+id/tv_pressure"
         style="@style/text_withe_bold_16"
         android:layout_width="wrap_content"
+        android:visibility="invisible"
         android:layout_height="wrap_content"
         android:textColor="@color/green"
         app:layout_constraintBottom_toBottomOf="@+id/tv_humidity"
         app:layout_constraintEnd_toEndOf="@+id/iv_pressure"
         app:layout_constraintStart_toStartOf="@+id/iv_pressure"
         app:layout_constraintTop_toTopOf="@+id/tv_humidity"
-        android:text="@string/pressure" />
+        android:text="pressure" />
 
     <TextView
         android:id="@+id/tv_uv"
+        android:visibility="invisible"
         style="@style/text_withe_bold_16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -241,65 +234,60 @@
         app:layout_constraintEnd_toEndOf="@+id/iv_uv"
         app:layout_constraintStart_toStartOf="@+id/iv_uv"
         app:layout_constraintTop_toBottomOf="@+id/iv_uv"
-        android:text="@string/uv" />
+        android:text="UV" />
 
     <TextView
         android:id="@+id/tv_cloudiness"
         style="@style/text_withe_bold_16"
         android:layout_width="wrap_content"
+        android:visibility="invisible"
         android:layout_height="wrap_content"
         android:textColor="@color/dark_blue"
         app:layout_constraintBottom_toBottomOf="@+id/tv_uv"
         app:layout_constraintEnd_toEndOf="@+id/iv_cloudiness"
         app:layout_constraintStart_toStartOf="@+id/iv_cloudiness"
         app:layout_constraintTop_toTopOf="@+id/tv_uv"
-        android:text="@string/cloudiness" />
+        android:text="cloudiness" />
 
     <TextView
         android:id="@+id/tv_dir"
         style="@style/text_withe_bold_16"
         android:layout_width="wrap_content"
+        android:visibility="invisible"
         android:layout_height="wrap_content"
         android:textColor="@color/rose_quartz"
         app:layout_constraintBottom_toBottomOf="@+id/tv_cloudiness"
         app:layout_constraintEnd_toEndOf="@+id/iv_dir"
         app:layout_constraintStart_toStartOf="@+id/iv_dir"
         app:layout_constraintTop_toTopOf="@+id/tv_cloudiness"
-        android:text="@string/wind_direction" />
+        android:text="wind direction" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <LinearLayout
         android:id="@+id/rv_hourly"
-        android:layout_width="0dp"
-        android:visibility="invisible"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_uv"
-        tools:itemCount="24"
-        tools:listitem="@layout/hourly_item" />
+        app:layout_constraintTop_toBottomOf="@id/tv_uv">
+        <include layout="@layout/square_item_place_holder" />
+        <include layout="@layout/square_item_place_holder" />
+        <include layout="@layout/square_item_place_holder" />
+    </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <LinearLayout
         android:id="@+id/rv_daily"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
-        android:visibility="invisible"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rv_hourly"
-        tools:listitem="@layout/daily_item" />
+        app:layout_constraintTop_toBottomOf="@id/rv_hourly" >
+        <include layout="@layout/rec_item_place_holder" />
+        <include layout="@layout/rec_item_place_holder" />
+        <include layout="@layout/rec_item_place_holder" />
 
-
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/home_shimmer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <include layout="@layout/home_place_holder"/>
-    </com.facebook.shimmer.ShimmerFrameLayout>
-
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

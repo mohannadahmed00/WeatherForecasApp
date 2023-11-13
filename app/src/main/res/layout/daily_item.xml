@@ -16,11 +16,13 @@
 
         <TextView
             android:id="@+id/tv_day"
-            style="@style/text_withe_20"
-            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/red"
+            style="@style/text_withe_20"
+            android:textColor="@color/gray"
+            android:textStyle="normal"
+            android:maxLines="1"
+            android:ellipsize="end"
             app:layout_constraintBottom_toBottomOf="@+id/tv_des"
             app:layout_constraintEnd_toStartOf="@id/iv_weather"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
@@ -44,8 +46,8 @@
             style="@style/text_withe_bold_16"
             android:layout_width="wrap_content"
             android:textColor="@color/red"
+            android:textStyle="normal"
             android:layout_height="wrap_content"
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/iv_weather"
             app:layout_constraintStart_toStartOf="@+id/iv_weather"
@@ -55,8 +57,7 @@
         <TextView
             android:id="@+id/tv_temp"
             style="@style/text_withe_20"
-            android:textColor="@color/red"
-            android:textStyle="bold"
+            android:textColor="@color/gray"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="@+id/tv_des"

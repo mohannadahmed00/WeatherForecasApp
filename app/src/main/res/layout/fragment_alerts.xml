@@ -5,14 +5,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".features.alerts.view.AlertsFragment">
+    <ImageView
+        android:id="@+id/iv_more"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_margin="8dp"
+        android:src="@drawable/more_ic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/red" />
+
+    <TextView
+        android:id="@+id/tv_alerts"
+        style="@style/text_withe_30"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/alerts"
+        android:textColor="@color/gray"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_more"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/iv_more" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_alerts"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_height="0dp"
         android:orientation="vertical"
-        tools:listitem="@layout/alert_item"
-        tools:itemCount="5"/>
+        android:visibility="visible"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_alerts"
+        tools:itemCount="5"
+        tools:listitem="@layout/alert_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_add_alert"
@@ -28,5 +53,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

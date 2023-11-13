@@ -44,6 +44,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -115,6 +116,7 @@ class HomeFragment : Fragment() {
                             handleFavoriteIcon(this, favorites)
                         }
                     }
+
                     UiState.Loading -> {}
                     is UiState.Success -> {
                         favorites = it.data.toMutableList()
@@ -134,11 +136,19 @@ class HomeFragment : Fragment() {
                     is UiState.Fail -> {
                         Log.e(TAG, "Fail forecast: ${it.error}")
                     }
+
                     UiState.Loading -> {
                         Log.d(TAG, "Loading forecast:")
                     }
+
                     is UiState.Success -> {
                         Log.d(TAG, "${it.data}")
+                        val f = it.data
+                        f?.apply {
+                            isCurrent = true
+                            viewModel.insertForecast(this)
+                        }
+
                         sharedVM.selectForecast(it.data)
                     }
                 }
@@ -147,6 +157,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun observeSelectedForecast() {
+        showLoading()
         lifecycleScope.launch {
             sharedVM.selectedForecast.collect {
                 if (it == null) {
@@ -164,24 +175,24 @@ class HomeFragment : Fragment() {
     }
 
     private fun handleForecastUI(forecast: ForecastModel) {
+        hideLoading()
         selectedForecast = forecast
         val current = forecast.current
         binding.tvZone.text = forecast.timezone
-        binding.tvCurrentTemp.text = convertTempToString(current?.temp?:0.0, tempUnit)
+        binding.tvCurrentTemp.text = convertTempToString(current?.temp ?: 0.0, tempUnit)
         Glide.with(requireContext())
             .load("https://openweathermap.org/img/wn/${current?.weather?.get(0)?.icon}.png")
             .into(binding.ivCurrent)
         binding.tvCurrentDes.text =
-            current?.weather?.get(0)?.description?:"no description"
-        binding.tvCurrentTimeDate.text =
-            getCurrentUTCTime(forecast.timezone_offset)
+            current?.weather?.get(0)?.description ?: "no description"
+        binding.tvCurrentTimeDate.text = getCurrentUTCTime(forecast.timezone_offset)
         binding.tvWind.text =
             convertWindSpeedToString(current?.wind_speed ?: 0.0, windSpeedUnit)
-        binding.tvHumidity.text = (current?.humidity?:0.0).toString().plus(" %")
-        binding.tvPressure.text = (current?.pressure?:0.0).toString().plus(" hPa")
-        binding.tvUv.text = "UV index ".plus((current?.uvi?:0.0).toString())
-        binding.tvCloudiness.text = (current?.clouds?:0.0).toString().plus(" %")
-        binding.tvDir.text = (current?.wind_deg?:0.0).toString().plus("°")
+        binding.tvHumidity.text = (current?.humidity ?: 0.0).toString().plus(" %")
+        binding.tvPressure.text = (current?.pressure ?: 0.0).toString().plus(" hPa")
+        binding.tvUv.text = "UV index ".plus((current?.uvi ?: 0.0).toString())
+        binding.tvCloudiness.text = (current?.clouds ?: 0.0).toString().plus(" %")
+        binding.tvDir.text = (current?.wind_deg ?: 0.0).toString().plus("°")
         dailyAdapter.updateList(forecast.daily)
         hourlyAdapter.updateList(forecast.hourly.take(24))
         handleFavoriteIcon(forecast, favorites)
@@ -219,8 +230,8 @@ class HomeFragment : Fragment() {
 
     private fun observeInsertion() {
         lifecycleScope.launch {
-            viewModel.insert.collect{
-                when(it){
+            viewModel.insert.collect {
+                when (it) {
                     is UiState.Fail -> {}
                     UiState.Loading -> {}
                     is UiState.Success -> {
@@ -230,10 +241,11 @@ class HomeFragment : Fragment() {
             }
         }
     }
+
     private fun observeDeletion() {
         lifecycleScope.launch {
-            viewModel.delete.collect{
-                when(it){
+            viewModel.delete.collect {
+                when (it) {
                     is UiState.Fail -> {}
                     UiState.Loading -> {}
                     is UiState.Success -> {
@@ -331,7 +343,10 @@ class HomeFragment : Fragment() {
             currentLat = location?.latitude ?: 0.0
             currentLon = location?.longitude ?: 0.0
             Log.i(TAG, "onLocationResult: $currentLat , $currentLon ")
+
             viewModel.getForecast(currentLat, currentLon, true)
+
+
             fusedLocationProviderClient.removeLocationUpdates(this)
         }
     }
@@ -411,6 +426,28 @@ class HomeFragment : Fragment() {
         val connectivityManager =
             requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         return connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork) != null
+    }
+
+    private fun showLoading() {
+        binding.homeShimmer.startShimmer()
+        binding.homeShimmer.visibility = View.VISIBLE
+        binding.cardView1.visibility = View.INVISIBLE
+        binding.rvDaily.visibility = View.INVISIBLE
+        binding.rvHourly.visibility = View.INVISIBLE
+        binding.ivCurrentLocation.visibility = View.INVISIBLE
+        binding.ivFavorite.visibility = View.INVISIBLE
+        binding.ivLocation.visibility = View.INVISIBLE
+    }
+
+    private fun hideLoading() {
+        binding.homeShimmer.hideShimmer()
+        binding.homeShimmer.visibility = View.INVISIBLE
+        binding.cardView1.visibility = View.VISIBLE
+        binding.rvDaily.visibility = View.VISIBLE
+        binding.rvHourly.visibility = View.VISIBLE
+        binding.ivCurrentLocation.visibility = View.VISIBLE
+        binding.ivFavorite.visibility = View.VISIBLE
+        binding.ivLocation.visibility = View.VISIBLE
     }
 
 }

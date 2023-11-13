@@ -33,8 +33,12 @@ import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
 import com.giraffe.weatherforecasapplication.utils.getAddress
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 import kotlin.math.log
 
 class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : BottomSheetDialogFragment(), DatePickerDialog.OnDateSetListener,
@@ -242,11 +246,11 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
         if (startFlag) {
             startHour = hourOfDay
             startMinute = minute
-            binding.tvStartDateTime.text = LocalDateTime.of(startYear, startMonth, startDay, startHour, startMinute, 10).toString()
+            binding.tvStartDateTime.text = formatLocalDateTime(LocalDateTime.of(startYear, startMonth+1, startDay, startHour, startMinute, 10))
         } else if (endFlag) {
             endHour = hourOfDay
             endMinute = minute
-            binding.tvEndDateTime.text = LocalDateTime.of(endYear, endMonth, endDay, endHour, endMinute, 10).toString()
+            binding.tvEndDateTime.text = formatLocalDateTime(LocalDateTime.of(endYear, endMonth+1, endDay, endHour, endMinute, 10))
         }
     }
 
@@ -308,8 +312,14 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
         this.forecast = forecast
     }
 
+    private fun formatLocalDateTime(localDateTime: LocalDateTime): String {
+        val formatter = DateTimeFormatter.ofPattern("HH:mm EEEE, MMM d, yyyy", Locale.getDefault())
+        return localDateTime.format(formatter)
+    }
+
+
     private fun validate():Boolean{
-        if (type==null) return false
+        //if (type==null) return false
         if (startMinute==-1 || startHour==-1 ||startDay==-1 ||startMonth==-1 ||startYear==-1) return false
         //if (endMinute==-1 || endHour==-1 ||endDay==-1 ||endMonth==-1 ||endYear==-1) return false
         if (forecast == null) return false

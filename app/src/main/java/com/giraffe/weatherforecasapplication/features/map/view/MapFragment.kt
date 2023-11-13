@@ -1,6 +1,8 @@
 package com.giraffe.weatherforecasapplication.features.map.view
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -27,6 +29,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.snackbar.Snackbar
 
 class MapFragment : Fragment(), OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
     GoogleApiClient.OnConnectionFailedListener,
@@ -65,8 +68,12 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleApiClient.ConnectionCa
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         binding.btnConfirm.setOnClickListener {
-            sharedVM.selectLocation(lat,lon)
-            findNavController().navigateUp()
+            if(isConnected()) {
+                sharedVM.selectLocation(lat, lon)
+                findNavController().navigateUp()
+            }else{
+                Snackbar.make(view, getString(R.string.make_sure_you_are_connected_to_the_internet),Snackbar.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -115,5 +122,11 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleApiClient.ConnectionCa
     override fun onCameraIdle() {
         lat = gMap?.cameraPosition?.target?.latitude ?: 0.0
         lon = gMap?.cameraPosition?.target?.longitude ?: 0.0
+    }
+
+    private fun isConnected(): Boolean {
+        val connectivityManager =
+            requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        return connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork) != null
     }
 }

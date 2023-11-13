@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkManager
+import com.giraffe.weatherforecasapplication.OnDrawerClick
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
 import com.giraffe.weatherforecasapplication.databinding.FragmentAlertsBinding
 import com.giraffe.weatherforecasapplication.features.alerts.AlarmReceiver
@@ -27,7 +28,7 @@ import com.giraffe.weatherforecasapplication.utils.UiState
 import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
 import kotlinx.coroutines.launch
 
-class AlertsFragment : Fragment(),BottomSheet.OnBottomSheetDismiss {
+class AlertsFragment : Fragment(), BottomSheet.OnBottomSheetDismiss {
     companion object {
         const val TAG = "AlertsFragment"
     }
@@ -36,13 +37,15 @@ class AlertsFragment : Fragment(),BottomSheet.OnBottomSheetDismiss {
     private lateinit var viewModel: AlertsVM
     private lateinit var factory: ViewModelFactory
     private lateinit var adapter: AlertsAdapter
-    private lateinit var itemTouchHelper:ItemTouchHelper
+    private lateinit var itemTouchHelper: ItemTouchHelper
+    private lateinit var onDrawerClick: OnDrawerClick
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate: ")
         super.onCreate(savedInstanceState)
-        factory = ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
-        viewModel = ViewModelProvider(this,factory)[AlertsVM::class.java]
+        factory =
+            ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
+        viewModel = ViewModelProvider(this, factory)[AlertsVM::class.java]
         adapter = AlertsAdapter(mutableListOf())
 
         val simpleItemTouchCallback: ItemTouchHelper.SimpleCallback = object :
@@ -59,9 +62,10 @@ class AlertsFragment : Fragment(),BottomSheet.OnBottomSheetDismiss {
                 val position = viewHolder.adapterPosition
                 val alertItem = adapter.list[position]
                 cancelAlarm(alertItem.id)
-                if (alertItem.endDateTime!=null){
-                    WorkManager.getInstance(requireContext()).cancelUniqueWork(alertItem.id.toString())
-                    cancelAlarm(alertItem.id+1)
+                if (alertItem.endDateTime != null) {
+                    WorkManager.getInstance(requireContext())
+                        .cancelUniqueWork(alertItem.id.toString())
+                    cancelAlarm(alertItem.id + 1)
                 }
                 viewModel.deleteAlert(alertItem.id)
                 adapter.removeItem(position)
@@ -70,7 +74,6 @@ class AlertsFragment : Fragment(),BottomSheet.OnBottomSheetDismiss {
         itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
     }
 
-    
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -84,13 +87,17 @@ class AlertsFragment : Fragment(),BottomSheet.OnBottomSheetDismiss {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.i(TAG, "onViewCreated: ")
         super.onViewCreated(view, savedInstanceState)
+        onDrawerClick = activity as OnDrawerClick
+        binding.ivMore.setOnClickListener {
+            onDrawerClick.onClick()
+        }
         binding.rvAlerts.adapter = adapter
         itemTouchHelper.attachToRecyclerView(binding.rvAlerts)
         observeAlerts()
         viewModel.getAlerts()
         binding.btnAddAlert.setOnClickListener {
             val bottomSheet = BottomSheet(this)
-            bottomSheet.show(childFragmentManager,BottomSheet.TAG)
+            bottomSheet.show(childFragmentManager, BottomSheet.TAG)
         }
     }
 
@@ -116,14 +123,16 @@ class AlertsFragment : Fragment(),BottomSheet.OnBottomSheetDismiss {
 
     private fun observeAlerts() {
         lifecycleScope.launch {
-            viewModel.alerts.collect{
-                when(it){
+            viewModel.alerts.collect {
+                when (it) {
                     is UiState.Fail -> {
                         Log.e(TAG, "observeAlerts: ${it.error}")
                     }
+
                     UiState.Loading -> {
                         Log.d(TAG, "observeAlerts: loading...")
                     }
+
                     is UiState.Success -> {
                         Log.i(TAG, "observeAlerts: ${it.data.size}")
                         adapter.updateList(it.data)
@@ -141,7 +150,7 @@ class AlertsFragment : Fragment(),BottomSheet.OnBottomSheetDismiss {
     }
 
 
-    private fun cancelAlarm(alertId:Int){
+    private fun cancelAlarm(alertId: Int) {
         val alarmManager = requireContext().getSystemService(AlarmManager::class.java)
         alarmManager.nextAlarmClock
         alarmManager.cancel(
@@ -153,6 +162,5 @@ class AlertsFragment : Fragment(),BottomSheet.OnBottomSheetDismiss {
             )
         )
     }
-
 
 }
