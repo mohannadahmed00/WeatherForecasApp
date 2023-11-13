@@ -93,6 +93,7 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
         //=================notification work area=================
         if (checkPermissions()) {
             createNotificationChannel()
+            createAlertsChannel()
         } else {
             requestPermissions()
         }
@@ -165,28 +166,34 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
             if (validate()){
                 val lat = forecast?.lat?:0.0
                 val lon = forecast?.lon?:0.0
-                var locationName = getAddress(requireContext(),lat,lon)
-                if (locationName== Constants.UNKNOWN_AREA){
-                    locationName = forecast?.timezone?:Constants.UNKNOWN_AREA
+                val locationName = getAddress(requireContext(),lat,lon,forecast?.timezone?:"null,")
+                val startLocalDate = LocalDateTime.of(startYear, startMonth + 1, startDay, startHour, startMinute, 1)
+                if (endMinute!=-1 && endHour!=-1 &&endDay!=-1 &&endMonth!=-1 &&endYear!=-1){
+                    val endLocalDate = LocalDateTime.of(endYear, endMonth + 1, endDay, endHour, endMinute, 1)
+                    alertItem = AlertItem(
+                        startLocalDate,
+                        type?:Constants.AlertType.NOTIFICATION,
+                        locationName,
+                        lat,
+                        lon,
+                        endLocalDate
+                    )
+                }else{
+                    alertItem = AlertItem(
+                        startLocalDate,
+                        type?:Constants.AlertType.NOTIFICATION,
+                        locationName,
+                        lat,
+                        lon
+                    )
                 }
-
-                val startLocalDate = LocalDateTime.of(startYear, startMonth + 1, startDay, startHour, startMinute, 5)
-                alertItem = AlertItem(
-                    startLocalDate,
-                    type?:Constants.AlertType.NOTIFICATION,
-                    locationName,
-                    lat,
-                    lon
-                )
                 alertItem?.apply {
                     alarmScheduler.schedule(this)
                     viewModel.storeAlarm(this)
                     onBottomSheetDismiss.onBottomSheetDismiss(this)
                 }
-
                 dismiss()
             }
-
         }
     }
 
@@ -245,12 +252,22 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
 
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
-            "channel id",
-            "channel name",
+            Constants.NOTIFICATION_CHANNEL_ID,
+            Constants.NOTIFICATION_CHANNEL_ID,
             NotificationManager.IMPORTANCE_HIGH
         )
         val notificationManager =
             requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    private fun createAlertsChannel() {
+        val channel = NotificationChannel(
+            Constants.ALERT_CHANNEL_ID,
+            Constants.ALERT_CHANNEL_ID,
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        val notificationManager = requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
     }
 
@@ -280,6 +297,7 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
                 //getLocation()
                 //showNotification()
                 createNotificationChannel()
+                createAlertsChannel()
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.giraffe.weatherforecasapplication.database
 
 import androidx.room.TypeConverter
+import com.giraffe.weatherforecasapplication.model.forecast.Alert
 import com.giraffe.weatherforecasapplication.model.forecast.Current
 import com.giraffe.weatherforecasapplication.model.forecast.Daily
 import com.giraffe.weatherforecasapplication.model.forecast.Hourly
@@ -29,6 +30,19 @@ class Converters {
     @TypeConverter
     fun toCurrent(json: String): Current {
         return Gson().fromJson(json, Current::class.java)
+    }
+
+    @TypeConverter
+    fun fromAlerts(alert: List<Alert>?): String {
+        return Gson().toJson(alert)
+    }
+    @TypeConverter
+    fun toAlerts(json: String): List<Alert>? {
+        return try {
+            Gson().fromJson<List<Alert>>(json)
+        } catch (e: Exception) {
+            arrayListOf()
+        }
     }
 
     @TypeConverter

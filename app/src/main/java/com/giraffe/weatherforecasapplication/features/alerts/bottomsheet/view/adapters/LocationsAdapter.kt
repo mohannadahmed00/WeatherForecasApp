@@ -38,10 +38,7 @@ class LocationsAdapter(
         val item = list[position]
         val context = holder.binding.root.context
         val textView = holder.binding.tvLocation
-        var location = getAddress(context, item.forecast.lat, item.forecast.lon)
-        if (location == Constants.UNKNOWN_AREA) {
-            location = item.forecast.timezone
-        }
+        val location = getAddress(context, item.forecast.lat, item.forecast.lon,item.forecast.timezone)
         textView.text = location
 
 

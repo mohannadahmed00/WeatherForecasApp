@@ -27,4 +27,9 @@
     <string name="end_date_and_time">End Date and Time:</string>
     <string name="select_start_date_and_time">Select start date and time</string>
     <string name="select_end_date_and_time_optional">Select end date and time (optional)</string>
+    <string name="everything_is_fine_in_that_area">Everything is fine in that area</string>
+    <string name="be_careful_of_the_weather_in_that_area_as_there_are_warnings">Be careful of the weather in that area, as there are warnings</string>
+    <string name="the_temperature_now_is">the temperature now is %1$s</string>
+    <string name="at">at: %1$s</string>
+    <string name="from_to">from: %1$s\nto: %2$s</string>
 </resources>

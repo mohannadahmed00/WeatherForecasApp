@@ -62,7 +62,9 @@ class MainActivity : AppCompatActivity(), OnDrawerClick {
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         NavigationUI.setupWithNavController(binding.navigationView, navController)
         /*if (intent.hasExtra(Constants.CLICKED_ALERT_ID)){
-            navController.navigate(R.id.alertsFragment)
+            val lat = intent.getDoubleExtra(Constants.EXTRA_LAT,0.0)
+            val lon = intent.getDoubleExtra(Constants.EXTRA_LON,0.0)
+            sharedVM.selectLocation(lat,lon)
             Log.i(TAG, "onCreate: ${intent.getIntExtra(Constants.CLICKED_ALERT_ID,-1)}")
         }*/
 

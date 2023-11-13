@@ -4,28 +4,26 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.bumptech.glide.Glide
 import com.giraffe.weatherforecasapplication.R
 import com.giraffe.weatherforecasapplication.databinding.AlertItemBinding
-import com.giraffe.weatherforecasapplication.databinding.DailyItemBinding
 import com.giraffe.weatherforecasapplication.model.alert.AlertItem
-import com.giraffe.weatherforecasapplication.model.forecast.Daily
-import com.giraffe.weatherforecasapplication.utils.Constants
-import com.giraffe.weatherforecasapplication.utils.toFahrenheit
-import com.giraffe.weatherforecasapplication.utils.toKelvin
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
 
 class AlertsAdapter(val list: MutableList<AlertItem>) : Adapter<AlertsAdapter.AlertsVH>() {
 
     inner class AlertsVH(private val binding: AlertItemBinding) : ViewHolder(binding.root) {
         fun bind(item: AlertItem) {
             binding.tvLocation.text = item.locationName
-            binding.tvTime.text = localToReadable(item.startDateTime)
+            if (item.endDateTime==null) {
+                binding.tvTime.text = binding.root.context.getString(R.string.at, localToReadable(item.startDateTime))
+            }else{
+                binding.tvTime.text = binding.root.context.getString(
+                    R.string.from_to,
+                    localToReadable(item.startDateTime),
+                    localToReadable(item.startDateTime)
+                )
+            }
         }
 
         private fun localToReadable(localDateTime: LocalDateTime): String {

@@ -14,5 +14,6 @@ data class ForecastModel(
     val hourly: List<Hourly>,
     var isCurrent:Boolean= false,
     var isFavorite:Boolean = false,
+    val alerts: List<Alert>? = null,
     //val minutely: List<Minutely>,
 )

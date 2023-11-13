@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.WorkManager
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
 import com.giraffe.weatherforecasapplication.databinding.FragmentAlertsBinding
 import com.giraffe.weatherforecasapplication.features.alerts.AlarmReceiver
@@ -56,10 +57,14 @@ class AlertsFragment : Fragment(),BottomSheet.OnBottomSheetDismiss {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
                 val position = viewHolder.adapterPosition
-                cancelAlarm(adapter.list[position].id)
-                viewModel.deleteAlert(adapter.list[position].id)
+                val alertItem = adapter.list[position]
+                cancelAlarm(alertItem.id)
+                if (alertItem.endDateTime!=null){
+                    WorkManager.getInstance(requireContext()).cancelUniqueWork(alertItem.id.toString())
+                    cancelAlarm(alertItem.id+1)
+                }
+                viewModel.deleteAlert(alertItem.id)
                 adapter.removeItem(position)
-
             }
         }
         itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
@@ -138,6 +143,7 @@ class AlertsFragment : Fragment(),BottomSheet.OnBottomSheetDismiss {
 
     private fun cancelAlarm(alertId:Int){
         val alarmManager = requireContext().getSystemService(AlarmManager::class.java)
+        alarmManager.nextAlarmClock
         alarmManager.cancel(
             PendingIntent.getBroadcast(
                 context,

@@ -14,12 +14,16 @@ fun Double.toMilesPerHours():Double{
     return this *  2.2369
 }
 
-fun getAddress(context: Context, latitude: Double, longitude: Double): String {
+fun getAddress(context: Context, latitude: Double, longitude: Double,zone:String): String {
     val geoCoder = Geocoder(context)
     val address = geoCoder.getFromLocation(latitude, longitude, 1)
     return if (!address.isNullOrEmpty()) {
         "${address[0].adminArea}, ${address[0].countryName}"
     } else {
-        Constants.UNKNOWN_AREA
+        if (zone.contains("null,")){
+            Constants.UNKNOWN_AREA
+        }else{
+            zone
+        }
     }
 }

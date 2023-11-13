@@ -17,6 +17,13 @@ object Constants {
     const val CLICKED_LON = "CLICKED_LON"
     const val CLICKED_DATE_TIME = "CLICKED_DATE_TIME"
     const val CLICKED_ALERT_ID = "CLICKED_ALERT_ID"
+    const val WORKER_ERROR = "WORKER_ERROR"
+    const val WORKER_SUCCESS = "WORKER_SUCCESS"
+    const val ALERT_CHANNEL_ID = "ALERT_CHANNEL_ID"
+    const val NOTIFICATION_CHANNEL_ID = "NOTIFICATION_CHANNEL_ID"
+    const val WORKER_FLAG = "WORKER_FLAG"
+    const val WORKER_ON = "WORKER_ON"
+    const val WORKER_OFF = "WORKER_OFF"
 
 
 

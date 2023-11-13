@@ -12,7 +12,7 @@ class ConcreteLocalSource(val context: Context) : LocalSource {
     override suspend fun getAllFavorites() = dao.getFavForecasts()
     override suspend fun getCurrent() = dao.getCurrent()
     override suspend fun insertForecast(forecast: ForecastModel):Long {
-        val address = getAddress(context,forecast.lat,forecast.lon)
+        val address = getAddress(context,forecast.lat,forecast.lon,forecast.timezone)
         forecast.timezone = address
         return dao.insertForecast(forecast)
     }
