@@ -112,7 +112,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Your locations:"
+        android:text="@string/your_locations"
         android:textColor="@color/red"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@id/rv_locations"

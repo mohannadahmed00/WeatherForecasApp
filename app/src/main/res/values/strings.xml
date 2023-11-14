@@ -39,4 +39,5 @@
     <string name="humidity">humidity</string>
     <string name="wind">wind</string>
     <string name="make_sure_you_are_connected_to_the_internet">Make sure you are connected to the Internet</string>
+    <string name="your_locations">Your locations:</string>
 </resources>

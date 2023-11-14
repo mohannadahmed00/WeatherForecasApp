@@ -37,5 +37,6 @@
     <string name="humidity">الرطوبة</string>
     <string name="wind">سرعة الرياح</string>
     <string name="make_sure_you_are_connected_to_the_internet">تحقق من أنك متصل بالإنترنت</string>
+    <string name="your_locations">موقعك:</string>
 
 </resources>

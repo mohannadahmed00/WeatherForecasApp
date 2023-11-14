@@ -36,6 +36,7 @@ import com.giraffe.weatherforecasapplication.network.ApiClient
 import com.giraffe.weatherforecasapplication.utils.Constants
 import com.giraffe.weatherforecasapplication.utils.UiState
 import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
+import com.giraffe.weatherforecasapplication.utils.getAddress
 import com.giraffe.weatherforecasapplication.utils.toFahrenheit
 import com.giraffe.weatherforecasapplication.utils.toKelvin
 import com.giraffe.weatherforecasapplication.utils.toMilesPerHours
@@ -48,6 +49,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 import java.util.TimeZone
 
 class HomeFragment : Fragment() {
@@ -178,7 +180,14 @@ class HomeFragment : Fragment() {
         hideLoading()
         selectedForecast = forecast
         val current = forecast.current
-        binding.tvZone.text = forecast.timezone
+
+        if(forecast.timezone.contains('/')){
+            binding.tvZone.text = getAddress(requireContext(),forecast.lat, forecast.lon,forecast.timezone)
+        }else{
+            binding.tvZone.text = forecast.timezone
+
+        }
+
         binding.tvCurrentTemp.text = convertTempToString(current?.temp ?: 0.0, tempUnit)
         Glide.with(requireContext())
             .load("https://openweathermap.org/img/wn/${current?.weather?.get(0)?.icon}.png")
@@ -327,7 +336,7 @@ class HomeFragment : Fragment() {
     private fun getCurrentUTCTime(shift: Double): String {
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         calendar.add(Calendar.HOUR_OF_DAY, (shift / 3600).toInt())
-        val dateFormat = SimpleDateFormat("HH:mm EEEE, MMM d, yyyy")
+        val dateFormat = SimpleDateFormat("HH:mm EEEE, MMM d, yyyy", Locale.US)
         dateFormat.timeZone = TimeZone.getTimeZone("UTC")
         return dateFormat.format(calendar.time)
     }

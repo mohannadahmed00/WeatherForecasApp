@@ -33,13 +33,10 @@ import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
 import com.giraffe.weatherforecasapplication.utils.getAddress
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
-import java.util.TimeZone
-import kotlin.math.log
 
 class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : BottomSheetDialogFragment(), DatePickerDialog.OnDateSetListener,
     TimePickerDialog.OnTimeSetListener,LocationsAdapter.OnLocationClick {
@@ -313,7 +310,7 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
     }
 
     private fun formatLocalDateTime(localDateTime: LocalDateTime): String {
-        val formatter = DateTimeFormatter.ofPattern("HH:mm EEEE, MMM d, yyyy", Locale.getDefault())
+        val formatter = DateTimeFormatter.ofPattern("HH:mm EEEE, MMM d, yyyy", Locale.US)
         return localDateTime.format(formatter)
     }
 

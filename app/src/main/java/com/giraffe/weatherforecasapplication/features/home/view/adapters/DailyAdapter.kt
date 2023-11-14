@@ -42,7 +42,7 @@ class DailyAdapter(private val list: MutableList<Daily>, val tempUnit:String) : 
         }
 
         private fun unixTimeToReadableDate(unixTime: Long): String {
-            val dateFormat = SimpleDateFormat("EEEE", Locale.getDefault())
+            val dateFormat = SimpleDateFormat("EEEE", Locale.US)
             dateFormat.timeZone = TimeZone.getDefault() // Set your desired time zone
             val date = Date(unixTime * 1000)
             return dateFormat.format(date)

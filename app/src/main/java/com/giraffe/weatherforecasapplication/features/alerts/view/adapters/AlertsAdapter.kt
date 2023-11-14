@@ -9,6 +9,7 @@ import com.giraffe.weatherforecasapplication.databinding.AlertItemBinding
 import com.giraffe.weatherforecasapplication.model.alert.AlertItem
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class AlertsAdapter(val list: MutableList<AlertItem>) : Adapter<AlertsAdapter.AlertsVH>() {
 
@@ -27,7 +28,7 @@ class AlertsAdapter(val list: MutableList<AlertItem>) : Adapter<AlertsAdapter.Al
         }
 
         private fun localToReadable(localDateTime: LocalDateTime): String {
-            val formatter = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm")
+            val formatter = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm", Locale.US)
             return localDateTime.format(formatter)
         }
     }
