@@ -1,9 +1,11 @@
 package com.giraffe.weatherforecasapplication.network
 
+import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import com.giraffe.weatherforecasapplication.utils.Constants
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -17,7 +19,6 @@ object ApiClient: RemoteSource {
             val url = originalHttpUrl.newBuilder()
                 .addQueryParameter("appid", Constants.API_KEY)
                 .addQueryParameter("units", Constants.UNITS)
-                .addQueryParameter("lang", Constants.LANGUAGE)
                 .build()
             val requestBuilder: Request.Builder = original.newBuilder()
                 .url(url)
@@ -34,5 +35,13 @@ object ApiClient: RemoteSource {
         .build().create(ApiServices::class.java)
 
 
-    override suspend fun getForecast(lat: Double, lon: Double) = apiServices.getForecast(lat, lon)
+    override suspend fun getForecast(lat: Double, lon: Double,lang:String):Response<ForecastModel> {
+        return if(lang == Constants.Languages.ARABIC){
+            apiServices.getForecast(lat, lon,"ar")
+        }else{
+            apiServices.getForecast(lat, lon,"en")
+
+        }
+
+    }
 }

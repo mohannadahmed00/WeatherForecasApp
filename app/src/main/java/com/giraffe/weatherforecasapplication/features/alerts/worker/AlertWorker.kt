@@ -46,6 +46,11 @@ class AlertWorker(val context: Context, workerParameters: WorkerParameters) :
                     is UiState.Success -> {
                         val alert = it.data?.alerts
                         val address = getAddress(context, lat, lon, it.data?.timezone ?: "null,")
+                        /*repo.getNotificationFlag().collect{flag->
+                            if (flag){
+
+                            }
+                        }*/
                         showNotification(context, address, alert, alertId)
                         Result.success(workDataOf(Constants.WORKER_SUCCESS to (alert != null)))
                     }

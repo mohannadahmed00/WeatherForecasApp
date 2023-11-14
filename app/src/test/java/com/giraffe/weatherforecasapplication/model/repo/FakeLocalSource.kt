@@ -1,14 +1,21 @@
 package com.giraffe.weatherforecasapplication.model.repo
 
 import com.giraffe.weatherforecasapplication.database.LocalSource
+import com.giraffe.weatherforecasapplication.model.alert.AlertItem
+import com.giraffe.weatherforecasapplication.model.forecast.Alert
 import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 
 class FakeLocalSource(
-    private val list: MutableList<ForecastModel>,
-    private val forecast: ForecastModel?
+    private val forecastList: MutableList<ForecastModel>,
+    private val alertsList: MutableList<AlertItem>,
+    private val forecast: ForecastModel?,
+    private var language:String,
+    private var tempUnit:String,
+    private var windSpeedUnit:String,
+    private var notificationFlag:Boolean,
 ) : LocalSource {
     override suspend fun getAllFavorites(): List<ForecastModel> {
-        return list
+        return forecastList
     }
 
     override suspend fun getCurrent(): ForecastModel? {
@@ -16,44 +23,65 @@ class FakeLocalSource(
     }
 
     override suspend fun insertForecast(forecast: ForecastModel): Long {
-        list.add(forecast)
-        return 1
+        forecastList.add(forecast)
+        return 1L
     }
 
     override suspend fun deleteAllForecasts() {
-        list.remove(forecast)
+        forecastList.clear()
     }
 
     override suspend fun deleteForecast(forecast: ForecastModel): Int {
-        list.clear()
+        forecastList.remove(forecast)
         return 1
     }
 
     override suspend fun deleteCurrent() {
-        list.removeIf { it.isCurrent }
+        forecastList.removeIf { it.isCurrent }
+    }
+
+    override suspend fun getAllAlerts(): List<AlertItem> {
+        return alertsList
+    }
+
+    override suspend fun insertAlert(alertItem: AlertItem): Long {
+        alertsList.add(alertItem)
+        return 1L
+    }
+
+    override suspend fun deleteAlert(alertId: Int) {
+        alertsList.removeIf { it.id == alertId }
     }
 
     override suspend fun getLanguage(): String {
-        return "arabic"
+        return language
     }
 
     override suspend fun getTempUnit(): String {
-        return "celsius"
+        return tempUnit
     }
 
     override suspend fun getWindSpeedUnit(): String {
-        return "metre"
+        return windSpeedUnit
     }
 
     override suspend fun getNotificationFlag(): Boolean {
-        return true
+        return notificationFlag
     }
 
-    override suspend fun setLanguage(lang: String) {}
+    override suspend fun setLanguage(lang: String) {
+        language = lang
+    }
 
-    override suspend fun setTempUnit(unit: String) {}
+    override suspend fun setTempUnit(unit: String) {
+        tempUnit = unit
+    }
 
-    override suspend fun setWindSpeedUnit(unit: String) {}
+    override suspend fun setWindSpeedUnit(unit: String) {
+        windSpeedUnit = unit
+    }
 
-    override suspend fun setNotificationFlag(notifyFlag: Boolean) {}
+    override suspend fun setNotificationFlag(notifyFlag: Boolean) {
+        notificationFlag = notifyFlag
+    }
 }

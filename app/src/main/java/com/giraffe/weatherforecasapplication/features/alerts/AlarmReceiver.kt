@@ -62,7 +62,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
                 if (context != null) {
                     val request = requestBuilder.build()
-                        WorkManager.getInstance(context).enqueueUniquePeriodicWork(alertId.toString(),ExistingPeriodicWorkPolicy.KEEP,request)
+                    WorkManager.getInstance(context).enqueueUniquePeriodicWork(alertId.toString(),ExistingPeriodicWorkPolicy.KEEP,request)
                 }
 
             } else {
@@ -114,7 +114,14 @@ class AlarmReceiver : BroadcastReceiver() {
                                 }
                                 val address =
                                     getAddress(context, lat, lon, it.data?.timezone ?: "null,")
-                                showNotification(context, address, temp, alertId)
+                                repo.getNotificationFlag().collect{flag->
+                                    if (flag){
+                                        showNotification(context, address, temp, alertId)
+                                    }
+                                }
+                                //showNotification(context, address, temp, alertId)
+
+
                             }
                         }
                     }

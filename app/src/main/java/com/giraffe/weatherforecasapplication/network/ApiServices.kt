@@ -11,5 +11,6 @@ interface ApiServices {
     suspend fun getForecast(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
+        @Query("lang") lang: String,
     ):Response<ForecastModel>
 }

@@ -8,6 +8,7 @@ import com.giraffe.weatherforecasapplication.network.RemoteSource
 import com.giraffe.weatherforecasapplication.utils.UiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
@@ -35,17 +36,13 @@ class Repo private constructor(
     ): Flow<UiState<ForecastModel?>> {
         return flow {
             try {
-                val response = remoteSource.getForecast(lat, lon)
-                Log.i("messi", "getForecast: ")
+                val response = remoteSource.getForecast(lat, lon, localSource.getLanguage())
                 if (response.isSuccessful) {
-                    Log.i("messi", "getForecast: success")
                     emit(UiState.Success(response.body()))
                 } else {
-                    Log.i("messi", "getForecast: fail ${response.message()}")
                     emit(UiState.Fail(response.message()))
                 }
             } catch (e: Exception) {
-                Log.i("messi", "getForecast: fail ${e.message}")
 
                 emit(UiState.Fail(e.message ?: "unknown error"))
             }
@@ -69,22 +66,15 @@ class Repo private constructor(
     }
 
     override suspend fun insertForecast(forecast: ForecastModel): Flow<UiState<Long>> {
-        Log.i("messi", "insertForecast: ")
-
         return flow {
             try {
                 val response = localSource.insertForecast(forecast)
-                if (response>0) {
-                    Log.i("messi", "insertForecast: success")
+                if (response > 0) {
                     emit(UiState.Success(response))
                 } else {
-                    Log.i("messi", "insertForecast: fail")
-
                     emit(UiState.Fail("fail insertion"))
                 }
             } catch (e: Exception) {
-                Log.i("messi", "insertForecast: fail ${e.message}")
-
                 emit(UiState.Fail(e.message ?: "unknown error"))
             }
         }.onStart { UiState.Loading }.flowOn(Dispatchers.IO)

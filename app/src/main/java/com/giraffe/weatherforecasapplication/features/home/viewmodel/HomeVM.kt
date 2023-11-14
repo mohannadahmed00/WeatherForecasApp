@@ -18,7 +18,7 @@ class HomeVM(private val repo: RepoInterface) : ViewModel() {
     val forecast: StateFlow<UiState<ForecastModel?>> = _forecast.asStateFlow()
     fun getForecast(lat: Double, lon: Double, isCurrent: Boolean) {
         _forecast.value = UiState.Loading
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repo.getForecast(lat, lon, isCurrent)
                 .catch {
                     _forecast.emit(UiState.Fail(it.message ?: "unknown error"))
@@ -30,7 +30,7 @@ class HomeVM(private val repo: RepoInterface) : ViewModel() {
     }
     fun getCurrentForecast() {
         _forecast.value = UiState.Loading
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repo.getCurrent()
                 .catch {
                     _forecast.emit(UiState.Fail(it.message ?: "unknown error"))
@@ -56,7 +56,7 @@ class HomeVM(private val repo: RepoInterface) : ViewModel() {
 
     fun getFavorites(){
         _favorites.value = UiState.Loading
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repo.getAllFavorites()
                 .catch { _favorites.emit(UiState.Fail(it.message ?: "unknown error")) }
                 .collect {
@@ -96,10 +96,5 @@ class HomeVM(private val repo: RepoInterface) : ViewModel() {
                 }
         }
     }
-
-    /*
-
-
-    */
 }
 
