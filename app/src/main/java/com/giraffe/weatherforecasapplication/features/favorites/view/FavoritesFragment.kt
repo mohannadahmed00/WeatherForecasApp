@@ -83,7 +83,6 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         showLoading()
-        binding.ivWrong.visibility = View.INVISIBLE
         binding.rvFavorites.visibility = View.INVISIBLE
         onDrawerClick = activity as OnDrawerClick
         binding.ivMore.setOnClickListener {
@@ -100,7 +99,6 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
                 when (it) {
                     is UiState.Fail -> {
                         hideLoading()
-                        binding.ivWrong.visibility = View.VISIBLE
                         binding.rvFavorites.visibility = View.INVISIBLE
                         Log.e(TAG, "fail: ${it.error}")
                     }
@@ -110,7 +108,6 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
 
                     is UiState.Success -> {
                         hideLoading()
-                        binding.ivWrong.visibility = View.INVISIBLE
                         binding.rvFavorites.visibility = View.VISIBLE
                         adapter.updateList(it.data)
                     }
