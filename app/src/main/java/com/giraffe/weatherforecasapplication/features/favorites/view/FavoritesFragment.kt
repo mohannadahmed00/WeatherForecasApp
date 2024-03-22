@@ -11,14 +11,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import androidx.work.WorkManager
 import com.giraffe.weatherforecasapplication.OnDrawerClick
 import com.giraffe.weatherforecasapplication.R
 import com.giraffe.weatherforecasapplication.SharedVM
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
 import com.giraffe.weatherforecasapplication.databinding.FragmentFavoritesBinding
 import com.giraffe.weatherforecasapplication.features.favorites.view.adapters.FavoritesAdapter
-import com.giraffe.weatherforecasapplication.features.favorites.viewmodel.FavoritesVM
 import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import com.giraffe.weatherforecasapplication.model.repo.Repo
 import com.giraffe.weatherforecasapplication.network.ApiClient
@@ -33,7 +31,7 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
     }
 
     private lateinit var binding: FragmentFavoritesBinding
-    private lateinit var viewModel: FavoritesVM
+    //private lateinit var viewModel: FavoritesVM
     private lateinit var factory: ViewModelFactory
     private lateinit var onDrawerClick: OnDrawerClick
     private lateinit var adapter: FavoritesAdapter
@@ -44,10 +42,9 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
         super.onCreate(savedInstanceState)
         factory =
             ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
-        viewModel = ViewModelProvider(this, factory)[FavoritesVM::class.java]
         sharedVM = ViewModelProvider(requireActivity(), factory)[SharedVM::class.java]
         adapter = FavoritesAdapter(mutableListOf(), this)
-        viewModel.getFavorites()
+        sharedVM.getFavorites()
 
         val simpleItemTouchCallback: ItemTouchHelper.SimpleCallback = object :
             ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
@@ -63,7 +60,7 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
                 val position = viewHolder.adapterPosition
                 val forecast = adapter.list[position]
                 tempForecast= adapter.list[position]
-                viewModel.deleteFavorite(forecast)
+                sharedVM.deleteForecast(forecast)
                 adapter.removeItem(position)
                 observeOnDeletion()
             }
@@ -95,7 +92,7 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
         binding.rvFavorites.adapter = adapter
         itemTouchHelper.attachToRecyclerView(binding.rvFavorites)
         lifecycleScope.launch {
-            viewModel.favorites.collect {
+            sharedVM.favorites.collect {
                 when (it) {
                     is UiState.Fail -> {
                         hideLoading()
@@ -115,7 +112,7 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
             }
         }
         lifecycleScope.launch {
-            viewModel.insert.collect{
+            sharedVM.insert.collect{
                 when(it){
                     is UiState.Fail -> {
 
@@ -124,7 +121,7 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
 
                     }
                     is UiState.Success -> {
-                        viewModel.getFavorites()
+                        sharedVM.getFavorites()
                     }
                 }
             }
@@ -135,7 +132,7 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
 
     private fun observeOnDeletion(){
         lifecycleScope.launch {
-            viewModel.deletion.collect {
+            sharedVM.delete.collect {
                 when (it) {
                     is UiState.Fail -> {
                         Log.e(TAG, "fail: ${it.error}")
@@ -147,7 +144,7 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
 
                     is UiState.Success -> {
                         Log.d(TAG, "deletion success: ")
-                        viewModel.getFavorites()
+                        sharedVM.getFavorites()
                         Snackbar.make(
                             requireView(),
                             "the location has been deleted",
@@ -155,7 +152,7 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
                         )
                             .setAction("Undo") {
                                 tempForecast?.let { temp ->
-                                    viewModel.insertForecast(temp)
+                                    sharedVM.insertForecast(temp)
                                 }
                             }
                             .show()

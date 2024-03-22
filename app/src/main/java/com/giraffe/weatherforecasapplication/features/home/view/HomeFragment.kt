@@ -45,7 +45,6 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -71,8 +70,6 @@ class HomeFragment : Fragment() {
     private var location: Location? = null
     private var currentLat: Double = 0.0
     private var currentLon: Double = 0.0
-    private var favorites: MutableList<ForecastModel> = mutableListOf()
-    private var selectedForecast: ForecastModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i(TAG, "onCreate: ")
@@ -82,6 +79,12 @@ class HomeFragment : Fragment() {
         sharedVM = ViewModelProvider(requireActivity(), factory)[SharedVM::class.java]
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        sharedVM.getTempUnit()
+        sharedVM.getWindSpeedUnit()
+        sharedVM.getFavorites()
+        observeTempUnit()
+        observeWindSpeedUnit()
     }
 
 
@@ -96,155 +99,161 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.i(TAG, "onViewCreated: ")
-        viewModel.getFavorites()
-        observeFavorites()
-        sharedVM.getTempUnit()
-        observeTempUnit()
-        sharedVM.getWindSpeedUnit()
-        observeWindSpeedUnit()
+        handleClicks()
         handleInit()
         observeSelectedForecast()
-        observeForecast()
-        handleClicks()
-    }
-
-    private fun observeFavorites() {
-        lifecycleScope.launch {
-            viewModel.favorites.collect {
-                when (it) {
-                    is UiState.Fail -> {
-                        favorites.clear()
-                        selectedForecast?.apply {
-                            handleFavoriteIcon(this, favorites)
-                        }
-                    }
-
-                    UiState.Loading -> {}
-                    is UiState.Success -> {
-                        favorites = it.data.toMutableList()
-                        selectedForecast?.apply {
-                            handleFavoriteIcon(this, favorites)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun observeForecast() {
-        lifecycleScope.launch {
-            viewModel.forecast.collect {
-                when (it) {
-                    is UiState.Fail -> {
-                        Log.e(TAG, "Fail forecast: ${it.error}")
-                    }
-
-                    UiState.Loading -> {
-                        Log.d(TAG, "Loading forecast:")
-                    }
-
-                    is UiState.Success -> {
-                        Log.d(TAG, "${it.data}")
-                        val f = it.data
-                        f?.apply {
-                            isCurrent = true
-                            viewModel.insertForecast(this)
-                        }
-
-                        sharedVM.selectForecast(it.data)
-                    }
-                }
-            }
-        }
     }
 
     private fun observeSelectedForecast() {
         showLoading()
         lifecycleScope.launch {
             sharedVM.selectedForecast.collect {
-                if (it == null) {
-                    if (isConnected()) {
-                        getLocation()
-                    } else {
-                        viewModel.getCurrentForecast()
+                Log.d(TAG, "observeSelectedForecast: $it")
+                when (it) {
+                    is UiState.Fail -> {}
+                    UiState.Loading -> {
+                        if (isConnected()) {
+                            getLocation()
+                        } else {
+                            viewModel.getCurrentForecast()
+                        }
                     }
-                    //observeForecast()
-                } else {
-                    handleForecastUI(it)
+
+                    is UiState.Success -> {
+                        it.data?.let { selectedForecast -> handleForecastUI(selectedForecast) }
+                    }
                 }
+
             }
         }
     }
 
     private fun handleForecastUI(forecast: ForecastModel) {
+        Log.d(TAG, "handleForecastUI: $forecast")
         hideLoading()
-        selectedForecast = forecast
-        val current = forecast.current
+        handleCurrentTemp(forecast)
+        handleTimeZone(forecast)
+        handleCurrentIcon(forecast)
+        handleCurrentDescription(forecast)
+        handleCurrentTimeDate(forecast)
+        handleCurrentWind(forecast)
+        handleCurrentHumidity(forecast)
+        handleCurrentPressure(forecast)
+        handleCurrentUV(forecast)
+        handleCurrentCloudiness(forecast)
+        handleCurrentDirection(forecast)
+        dailyAdapter.updateList(forecast.daily)
+        hourlyAdapter.updateList(forecast.hourly.take(24))
+        handleFavoriteIcon(forecast)
+    }
 
-        if(forecast.timezone.contains('/')){
-            binding.tvZone.text = getAddress(requireContext(),forecast.lat, forecast.lon,forecast.timezone)
-        }else{
+    private fun handleTimeZone(forecast: ForecastModel) {
+        if (forecast.timezone.contains('/')) {
+            binding.tvZone.text =
+                getAddress(requireContext(), forecast.lat, forecast.lon, forecast.timezone)
+        } else {
             binding.tvZone.text = forecast.timezone
 
         }
+    }
 
-        binding.tvCurrentTemp.text = convertTempToString(current?.temp ?: 0.0, tempUnit)
+    private fun handleCurrentTemp(forecast: ForecastModel) {
+        binding.tvCurrentTemp.text = convertTempToString(forecast.current?.temp ?: 0.0, tempUnit)
+    }
+
+    private fun handleCurrentIcon(forecast: ForecastModel) {
         Glide.with(requireContext())
-            .load("https://openweathermap.org/img/wn/${current?.weather?.get(0)?.icon}.png")
+            .load("https://openweathermap.org/img/wn/${forecast.current?.weather?.get(0)?.icon}.png")
             .into(binding.ivCurrent)
+    }
+
+
+    private fun handleCurrentDescription(forecast: ForecastModel) {
         binding.tvCurrentDes.text =
-            current?.weather?.get(0)?.description ?: "no description"
+            forecast.current?.weather?.get(0)?.description ?: "no description"
+    }
+
+    private fun handleCurrentTimeDate(forecast: ForecastModel) {
         binding.tvCurrentTimeDate.text = getCurrentUTCTime(forecast.timezone_offset)
+    }
+
+    private fun handleCurrentWind(forecast: ForecastModel) {
         binding.tvWind.text =
-            convertWindSpeedToString(current?.wind_speed ?: 0.0, windSpeedUnit)
-        binding.tvHumidity.text = (current?.humidity ?: 0.0).toString().plus(" %")
-        binding.tvPressure.text = (current?.pressure ?: 0.0).toString().plus(" hPa")
-        binding.tvUv.text = "UV index ".plus((current?.uvi ?: 0.0).toString())
-        binding.tvCloudiness.text = (current?.clouds ?: 0.0).toString().plus(" %")
-        binding.tvDir.text = (current?.wind_deg ?: 0.0).toString().plus("°")
-        dailyAdapter.updateList(forecast.daily)
-        hourlyAdapter.updateList(forecast.hourly.take(24))
-        handleFavoriteIcon(forecast, favorites)
+            convertWindSpeedToString(forecast.current?.wind_speed ?: 0.0, windSpeedUnit)
+    }
+
+    private fun handleCurrentHumidity(forecast: ForecastModel) {
+        binding.tvHumidity.text = (forecast.current?.humidity ?: 0.0).toString().plus(" %")
+    }
+
+    private fun handleCurrentPressure(forecast: ForecastModel) {
+        binding.tvPressure.text = (forecast.current?.pressure ?: 0.0).toString().plus(" hPa")
+    }
+
+    private fun handleCurrentUV(forecast: ForecastModel) {
+        binding.tvUv.text = "UV index ".plus((forecast.current?.uvi ?: 0.0).toString())
+    }
+
+    private fun handleCurrentCloudiness(forecast: ForecastModel) {
+        binding.tvCloudiness.text = (forecast.current?.clouds ?: 0.0).toString().plus(" %")
+    }
+
+    private fun handleCurrentDirection(forecast: ForecastModel) {
+        binding.tvDir.text = (forecast.current?.wind_deg ?: 0.0).toString().plus("°")
     }
 
 
-    private fun handleFavoriteIcon(forecast: ForecastModel, favorites: List<ForecastModel>) {
-        Log.i(TAG, "handleFavoriteIcon: ${forecast.timezone} => favorites size:${favorites.size}")
-        favorites.firstOrNull { (it.lat + it.lon) == (forecast.lat + forecast.lon) }.let {
-            if (it == null) {
-                binding.ivFavorite.setColorFilter(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.gray
-                    )
-                )
-                binding.ivFavorite.setOnClickListener {
-                    viewModel.insertForecast(forecast)
-                    observeInsertion()
-                }
-            } else {
-                binding.ivFavorite.setColorFilter(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.dark_red
-                    )
-                )
-                binding.ivFavorite.setOnClickListener {
-                    viewModel.deleteForecast(forecast)
-                    observeDeletion()
-                }
-            }
-        }
-    }
-
-    private fun observeInsertion() {
+    private fun handleFavoriteIcon(forecast: ForecastModel) {
+        Log.i(TAG, "handleFavoriteIcon:")
         lifecycleScope.launch {
-            viewModel.insert.collect {
+            sharedVM.favorites.collect {
                 when (it) {
                     is UiState.Fail -> {}
                     UiState.Loading -> {}
                     is UiState.Success -> {
-                        viewModel.getFavorites()
+                        it.data.firstOrNull { fav ->
+                            (fav.lat + fav.lon) == (forecast.lat + forecast.lon)
+                        }.let { fav ->
+                            if (fav == null) {
+                                binding.ivFavorite.setColorFilter(
+                                    ContextCompat.getColor(
+                                        requireContext(),
+                                        R.color.gray
+                                    )
+                                )
+                                binding.ivFavorite.setOnClickListener {
+                                    sharedVM.insertForecast(forecast)
+                                    observeInsertion()
+                                }
+                            } else {
+                                binding.ivFavorite.setColorFilter(
+                                    ContextCompat.getColor(
+                                        requireContext(),
+                                        R.color.dark_red
+                                    )
+                                )
+                                binding.ivFavorite.setOnClickListener {
+                                    sharedVM.deleteForecast(forecast)
+                                    observeDeletion()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    private fun observeInsertion() {
+        lifecycleScope.launch {
+            sharedVM.insert.collect {
+                when (it) {
+                    is UiState.Fail -> {}
+                    UiState.Loading -> {}
+                    is UiState.Success -> {
+                        sharedVM.getFavorites()
                     }
                 }
             }
@@ -253,12 +262,12 @@ class HomeFragment : Fragment() {
 
     private fun observeDeletion() {
         lifecycleScope.launch {
-            viewModel.delete.collect {
+            sharedVM.delete.collect {
                 when (it) {
                     is UiState.Fail -> {}
                     UiState.Loading -> {}
                     is UiState.Success -> {
-                        viewModel.getFavorites()
+                        sharedVM.getFavorites()
                     }
                 }
             }
@@ -268,6 +277,7 @@ class HomeFragment : Fragment() {
     private fun observeWindSpeedUnit() {
         lifecycleScope.launch {
             sharedVM.windSpeedUnit.collect {
+                Log.d(TAG, "observeWindSpeedUnit: $it")
                 windSpeedUnit = it
             }
         }
@@ -276,6 +286,7 @@ class HomeFragment : Fragment() {
     private fun observeTempUnit() {
         lifecycleScope.launch {
             sharedVM.tempUnit.collect {
+                Log.d(TAG, "observeTempUnit: $it")
                 tempUnit = it
             }
         }
@@ -321,7 +332,6 @@ class HomeFragment : Fragment() {
             } else {
                 viewModel.getCurrentForecast()
             }
-            //observeForecast()
         }
     }
 
@@ -352,10 +362,7 @@ class HomeFragment : Fragment() {
             currentLat = location?.latitude ?: 0.0
             currentLon = location?.longitude ?: 0.0
             Log.i(TAG, "onLocationResult: $currentLat , $currentLon ")
-
-            viewModel.getForecast(currentLat, currentLon, true)
-
-
+            sharedVM.getForecast(currentLat, currentLon, true)
             fusedLocationProviderClient.removeLocationUpdates(this)
         }
     }

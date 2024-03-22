@@ -40,8 +40,6 @@ object ApiClient: RemoteSource {
             apiServices.getForecast(lat, lon,"ar")
         }else{
             apiServices.getForecast(lat, lon,"en")
-
         }
-
     }
 }

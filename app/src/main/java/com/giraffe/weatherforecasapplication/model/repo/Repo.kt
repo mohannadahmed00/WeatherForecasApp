@@ -43,7 +43,6 @@ class Repo private constructor(
                     emit(UiState.Fail(response.message()))
                 }
             } catch (e: Exception) {
-
                 emit(UiState.Fail(e.message ?: "unknown error"))
             }
             //remoteSource.getForecast(lat, lon)

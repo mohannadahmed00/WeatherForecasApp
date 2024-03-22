@@ -8,13 +8,19 @@ import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import com.giraffe.weatherforecasapplication.model.repo.FakeLocalSource
 import com.giraffe.weatherforecasapplication.model.repo.FakeRemoteSource
 import com.giraffe.weatherforecasapplication.utils.Constants
+import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import java.time.LocalDateTime
 
 
-@RunWith(AndroidJUnit4::class)
+//@RunWith(AndroidJUnit4::class)
 class SharedVMTest {
 
     @get:Rule
@@ -72,5 +78,15 @@ class SharedVMTest {
         )
         repo = FakeRepo(remoteSource, localSource)
         sharedVM = SharedVM(repo)
+    }
+
+
+    @Test
+    fun getLanguage() = runBlockingTest {
+        sharedVM.getLanguage()
+        sharedVM.language.collect {
+            assertThat(it).endsWith(Constants.Languages.ARABIC)
+        }
+
     }
 }

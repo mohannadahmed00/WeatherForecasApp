@@ -21,7 +21,6 @@ interface RepoInterface {
     suspend fun deleteAlert(alertId: Int)
 
 
-
     suspend fun getLanguage():Flow<String>
     suspend fun getTempUnit():Flow<String>
     suspend fun getWindSpeedUnit():Flow<String>

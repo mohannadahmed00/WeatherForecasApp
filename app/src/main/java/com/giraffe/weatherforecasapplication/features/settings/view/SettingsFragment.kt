@@ -1,6 +1,5 @@
 package com.giraffe.weatherforecasapplication.features.settings.view
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -15,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import com.giraffe.weatherforecasapplication.MainActivity
 import com.giraffe.weatherforecasapplication.OnDrawerClick
 import com.giraffe.weatherforecasapplication.R
+import com.giraffe.weatherforecasapplication.SharedVM
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
 import com.giraffe.weatherforecasapplication.databinding.FragmentSettingsBinding
 import com.giraffe.weatherforecasapplication.features.settings.viewmodel.SettingsVM
@@ -32,6 +32,7 @@ class SettingsFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingsBinding
     private lateinit var viewModel: SettingsVM
+    private lateinit var sharedVM: SharedVM
     private lateinit var factory: ViewModelFactory
 
     private lateinit var onDrawerClick: OnDrawerClick
@@ -40,9 +41,10 @@ class SettingsFragment : Fragment() {
         factory =
             ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
         viewModel = ViewModelProvider(this, factory)[SettingsVM::class.java]
-        viewModel.getLanguage()
-        viewModel.getTempUnit()
-        viewModel.getWindSpeedUnit()
+        sharedVM = ViewModelProvider(requireActivity(), factory)[SharedVM::class.java]
+        sharedVM.getLanguage()
+        sharedVM.getTempUnit()
+        sharedVM.getWindSpeedUnit()
         viewModel.getNotificationFlag()
     }
 
@@ -63,7 +65,7 @@ class SettingsFragment : Fragment() {
 
 
         lifecycleScope.launch {
-            viewModel.language.collect {
+            sharedVM.language.collect {
                 Log.i(TAG, "language: $it")
                 when (it) {
                     Constants.Languages.ENGLISH -> {
@@ -77,7 +79,7 @@ class SettingsFragment : Fragment() {
             }
         }
         lifecycleScope.launch {
-            viewModel.tempUnit.collect {
+            sharedVM.tempUnit.collect {
                 Log.i(TAG, "tempUnit: $it")
                 when (it) {
                     Constants.TempUnits.CELSIUS -> {
@@ -95,7 +97,7 @@ class SettingsFragment : Fragment() {
             }
         }
         lifecycleScope.launch {
-            viewModel.windSpeedUnit.collect {
+            sharedVM.windSpeedUnit.collect {
                 Log.i(TAG, "windSpeedUnit: $it")
                 when (it) {
                     Constants.WindSpeedUnits.METRE -> {
@@ -115,6 +117,7 @@ class SettingsFragment : Fragment() {
                     true -> {
                         binding.tbNotification.check(R.id.btn_on)
                     }
+
                     false -> {
                         binding.tbNotification.check(R.id.btn_off)
                     }
@@ -130,14 +133,14 @@ class SettingsFragment : Fragment() {
                 when (checkedId) {
                     R.id.btn_ar -> {
                         Log.d(TAG, "select: ${Constants.Languages.ARABIC}")
-                        viewModel.setLanguage(Constants.Languages.ARABIC)
+                        sharedVM.setLanguage(Constants.Languages.ARABIC)
                         setLocale(requireActivity(), "ar")
                         refresh()
                     }
 
                     R.id.btn_en -> {
                         Log.d(TAG, "select: ${Constants.Languages.ENGLISH}")
-                        viewModel.setLanguage(Constants.Languages.ENGLISH)
+                        sharedVM.setLanguage(Constants.Languages.ENGLISH)
                         setLocale(requireActivity(), "en")
                         refresh()
                     }
@@ -149,17 +152,17 @@ class SettingsFragment : Fragment() {
                 when (checkedId) {
                     R.id.btn_celsius -> {
                         Log.d(TAG, "select: ${Constants.TempUnits.CELSIUS}")
-                        viewModel.setTempUnit(Constants.TempUnits.CELSIUS)
+                        sharedVM.setTempUnit(Constants.TempUnits.CELSIUS)
                     }
 
                     R.id.btn_fahrenheit -> {
                         Log.d(TAG, "select: ${Constants.TempUnits.FAHRENHEIT}")
-                        viewModel.setTempUnit(Constants.TempUnits.FAHRENHEIT)
+                        sharedVM.setTempUnit(Constants.TempUnits.FAHRENHEIT)
                     }
 
                     R.id.btn_kelvin -> {
                         Log.d(TAG, "select: ${Constants.TempUnits.KELVIN}")
-                        viewModel.setTempUnit(Constants.TempUnits.KELVIN)
+                        sharedVM.setTempUnit(Constants.TempUnits.KELVIN)
                     }
                 }
             }
@@ -169,13 +172,13 @@ class SettingsFragment : Fragment() {
                 when (checkedId) {
                     R.id.btn_miles -> {
                         Log.d(TAG, "select: ${Constants.WindSpeedUnits.MILES}")
-                        viewModel.setWindSpeedUnit(Constants.WindSpeedUnits.MILES)
+                        sharedVM.setWindSpeedUnit(Constants.WindSpeedUnits.MILES)
                     }
 
                     R.id.btn_metre -> {
                         Log.d(TAG, "select: ${Constants.WindSpeedUnits.METRE}")
 
-                        viewModel.setWindSpeedUnit(Constants.WindSpeedUnits.METRE)
+                        sharedVM.setWindSpeedUnit(Constants.WindSpeedUnits.METRE)
                     }
                 }
             }
@@ -207,8 +210,8 @@ class SettingsFragment : Fragment() {
         )
     }
 
-    private fun refresh(){
+    private fun refresh() {
         requireActivity().finish()
-        startActivity(Intent(requireActivity(),MainActivity::class.java))
+        startActivity(Intent(requireActivity(), MainActivity::class.java))
     }
 }
