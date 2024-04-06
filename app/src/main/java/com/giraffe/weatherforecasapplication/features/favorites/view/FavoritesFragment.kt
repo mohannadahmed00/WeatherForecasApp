@@ -1,7 +1,6 @@
 package com.giraffe.weatherforecasapplication.features.favorites.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,29 +19,25 @@ import com.giraffe.weatherforecasapplication.features.favorites.view.adapters.Fa
 import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import com.giraffe.weatherforecasapplication.model.repo.Repo
 import com.giraffe.weatherforecasapplication.network.ApiClient
-import com.giraffe.weatherforecasapplication.utils.UiState
 import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
-class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
+class FavoritesFragment : Fragment(), FavoritesAdapter.OnSelectClick {
     companion object {
         const val TAG = "FavoritesFragment"
     }
 
     private lateinit var binding: FragmentFavoritesBinding
-    //private lateinit var viewModel: FavoritesVM
     private lateinit var factory: ViewModelFactory
     private lateinit var onDrawerClick: OnDrawerClick
     private lateinit var adapter: FavoritesAdapter
     private lateinit var sharedVM: SharedVM
     private var tempForecast: ForecastModel? = null
-    private lateinit var itemTouchHelper:ItemTouchHelper
+    private lateinit var itemTouchHelper: ItemTouchHelper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        factory =
-            ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
-        sharedVM = ViewModelProvider(requireActivity(), factory)[SharedVM::class.java]
+        handleInit()
         adapter = FavoritesAdapter(mutableListOf(), this)
         sharedVM.getFavorites()
 
@@ -59,14 +54,32 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
                 val position = viewHolder.adapterPosition
                 val forecast = adapter.list[position]
-                tempForecast= adapter.list[position]
-                sharedVM.deleteForecast(forecast)
+                tempForecast = adapter.list[position]
+                sharedVM.justDeleteFavorite(forecast)
+                showRetrySnackbar(requireView(),"${forecast.timezone} has been deleted"){
+                    tempForecast?.let {
+                        sharedVM.justInsertFavorite(it)
+                    }
+                }
                 adapter.removeItem(position)
-                observeOnDeletion()
             }
         }
         itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
 
+    }
+
+    fun showRetrySnackbar(view: View, message: String, onRetryClick: () -> Unit) {
+        val snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG)
+        snackbar.setAction("Undo") {
+            onRetryClick()
+        }
+        snackbar.show()
+    }
+
+    private fun handleInit() {
+        factory =
+            ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
+        sharedVM = ViewModelProvider(requireActivity(), factory)[SharedVM::class.java]
     }
 
     override fun onCreateView(
@@ -93,87 +106,24 @@ class FavoritesFragment : Fragment(),FavoritesAdapter.OnSelectClick {
         itemTouchHelper.attachToRecyclerView(binding.rvFavorites)
         lifecycleScope.launch {
             sharedVM.favorites.collect {
-                when (it) {
-                    is UiState.Fail -> {
-                        hideLoading()
-                        binding.rvFavorites.visibility = View.INVISIBLE
-                        Log.e(TAG, "fail: ${it.error}")
-                    }
-                    UiState.Loading -> {
-                        Log.d(TAG, "loading: ")
-                    }
-
-                    is UiState.Success -> {
-                        hideLoading()
-                        binding.rvFavorites.visibility = View.VISIBLE
-                        adapter.updateList(it.data)
-                    }
-                }
-            }
-        }
-        lifecycleScope.launch {
-            sharedVM.insert.collect{
-                when(it){
-                    is UiState.Fail -> {
-
-                    }
-                    UiState.Loading -> {
-
-                    }
-                    is UiState.Success -> {
-                        sharedVM.getFavorites()
-                    }
-                }
-            }
-        }
-
-
-    }
-
-    private fun observeOnDeletion(){
-        lifecycleScope.launch {
-            sharedVM.delete.collect {
-                when (it) {
-                    is UiState.Fail -> {
-                        Log.e(TAG, "fail: ${it.error}")
-                    }
-
-                    UiState.Loading -> {
-                        Log.d(TAG, "loading: ")
-                    }
-
-                    is UiState.Success -> {
-                        Log.d(TAG, "deletion success: ")
-                        sharedVM.getFavorites()
-                        Snackbar.make(
-                            requireView(),
-                            "the location has been deleted",
-                            Snackbar.LENGTH_LONG
-                        )
-                            .setAction("Undo") {
-                                tempForecast?.let { temp ->
-                                    sharedVM.insertForecast(temp)
-                                }
-                            }
-                            .show()
-
-                    }
-                }
+                hideLoading()
+                binding.rvFavorites.visibility = View.VISIBLE
+                adapter.updateList(it)
             }
         }
     }
 
     override fun onSelectClick(forecast: ForecastModel) {
-        sharedVM.selectForecast(forecast)
+        sharedVM.setSelectedForecast(forecast)
         findNavController().navigate(R.id.homeFragment)
     }
 
-    private fun showLoading(){
+    private fun showLoading() {
         binding.itemsShimmer.startShimmer()
         binding.itemsShimmer.visibility = View.VISIBLE
     }
 
-    private fun hideLoading(){
+    private fun hideLoading() {
         binding.itemsShimmer.hideShimmer()
         binding.itemsShimmer.visibility = View.INVISIBLE
     }

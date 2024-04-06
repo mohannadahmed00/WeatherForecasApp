@@ -1,7 +1,6 @@
 package com.giraffe.weatherforecasapplication.model.forecast
 
 import androidx.room.Entity
-import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "forecast_table", primaryKeys = ["lat","lon"])
 data class ForecastModel(

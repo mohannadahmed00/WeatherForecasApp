@@ -9,6 +9,7 @@ import com.giraffe.weatherforecasapplication.R
 import com.giraffe.weatherforecasapplication.databinding.DailyItemBinding
 import com.giraffe.weatherforecasapplication.model.forecast.Daily
 import com.giraffe.weatherforecasapplication.utils.Constants
+import com.giraffe.weatherforecasapplication.utils.getIconRes
 import com.giraffe.weatherforecasapplication.utils.toFahrenheit
 import com.giraffe.weatherforecasapplication.utils.toKelvin
 import java.text.SimpleDateFormat
@@ -21,9 +22,10 @@ class DailyAdapter(private val list: MutableList<Daily>, val tempUnit:String) : 
     inner class DailyVH(private val binding: DailyItemBinding) : ViewHolder(binding.root) {
         fun bind(item: Daily) {
             binding.tvDay.text = unixTimeToReadableDate(item.dt.toLong())
-            Glide.with(binding.root.context)
+            /*Glide.with(binding.root.context)
                 .load("https://openweathermap.org/img/wn/${item.weather[0].icon}.png")
-                .into(binding.ivWeather)
+                .into(binding.ivWeather)*/
+            binding.ivWeather.setImageResource(getIconRes(item.weather[0].icon))
             binding.tvDes.text = item.weather[0].description
             binding.tvTemp.text= convertTempToString(item.temp.min, tempUnit ).plus(" / ")//item.temp.min.toInt().toString().plus("°/")
                 .plus(convertTempToString(item.temp.max, tempUnit ))

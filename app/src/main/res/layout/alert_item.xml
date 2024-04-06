@@ -12,13 +12,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="18dp">
+        <ImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:tint="@color/red"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_location"
+            app:layout_constraintEnd_toStartOf="@id/tv_location"
+            app:layout_constraintBottom_toBottomOf="@id/tv_time"
+            android:src="@drawable/alert_active_ic"/>
 
         <TextView
             android:id="@+id/tv_location"
             style="@style/text_withe_20"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/gray"
+            android:textColor="@color/white"
             android:textStyle="normal"
             android:maxLines="1"
             android:ellipsize="end"
@@ -26,7 +37,7 @@
             app:layout_constraintBottom_toTopOf="@id/tv_time"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_icon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Cairo" />
 
@@ -35,7 +46,7 @@
             style="@style/text_withe_bold_16"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/red"
+            android:textColor="@color/gray"
             android:textStyle="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/tv_location"

@@ -12,6 +12,7 @@ import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 @TypeConverters(Converters::class)
 abstract class AppDataBase : RoomDatabase() {
     abstract fun getFavoritesDao(): FavoritesDao
+    abstract fun getAlertsDao(): AlertsDao
     companion object {
         @Volatile
         private var INSTANCE: AppDataBase? = null

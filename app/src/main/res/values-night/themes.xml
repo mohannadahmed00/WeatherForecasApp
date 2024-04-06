@@ -1,7 +1,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.WeatherForecasApplication" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.WeatherForecasApplication" parent="Theme.Material3.Dark.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!--<item name="android:statusBarColor">#232323</item>-->
+        <!--<item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowTranslucentNavigation">true</item>-->
+
+
+        <item name="android:statusBarColor">#232323</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowLightStatusBar">false</item>
+
     </style>
 </resources>

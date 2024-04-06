@@ -14,7 +14,7 @@ class FakeLocalSource(
     private var windSpeedUnit:String,
     private var notificationFlag:Boolean,
 ) : LocalSource {
-    override suspend fun getAllFavorites(): List<ForecastModel> {
+    override suspend fun getFavorites(): List<ForecastModel> {
         return forecastList
     }
 
@@ -22,16 +22,16 @@ class FakeLocalSource(
         return forecast
     }
 
-    override suspend fun insertForecast(forecast: ForecastModel): Long {
+    override suspend fun insertFavorite(forecast: ForecastModel): Long {
         forecastList.add(forecast)
         return 1L
     }
 
-    override suspend fun deleteAllForecasts() {
+    override suspend fun deleteFavorites() {
         forecastList.clear()
     }
 
-    override suspend fun deleteForecast(forecast: ForecastModel): Int {
+    override suspend fun deleteFavorite(forecast: ForecastModel): Int {
         forecastList.remove(forecast)
         return 1
     }
@@ -40,7 +40,7 @@ class FakeLocalSource(
         forecastList.removeIf { it.isCurrent }
     }
 
-    override suspend fun getAllAlerts(): List<AlertItem> {
+    override suspend fun getAlerts(): List<AlertItem> {
         return alertsList
     }
 

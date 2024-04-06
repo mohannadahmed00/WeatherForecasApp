@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.giraffe.weatherforecasapplication.R
 import com.giraffe.weatherforecasapplication.SharedVM
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
@@ -26,6 +27,7 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -37,6 +39,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleApiClient.ConnectionCa
     companion object {
         const val TAG = "MapFragment"
     }
+
+    private val args: MapFragmentArgs by navArgs()
 
     private lateinit var binding: FragmentMapBinding
     private lateinit var viewModel: MapVM
@@ -69,7 +73,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleApiClient.ConnectionCa
         mapFragment.getMapAsync(this)
         binding.btnConfirm.setOnClickListener {
             if(isConnected()) {
-                sharedVM.selectLocation(lat, lon)
+                sharedVM.getForecast(lat,lon)
                 findNavController().navigateUp()
             }else{
                 Snackbar.make(view, getString(R.string.make_sure_you_are_connected_to_the_internet),Snackbar.LENGTH_SHORT).show()
@@ -102,7 +106,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleApiClient.ConnectionCa
             SharedHelper.getInstance(requireContext()).read(Constants.LocationKeys.CURRENT_LON)
                 ?.toDouble() ?: 0.0
         //gMap?.uiSettings?.isMyLocationButtonEnabled = false
-        moveCamera(LatLng(lat, lon))
+        moveCamera(LatLng(args.lat.toDouble(), args.lon.toDouble()))
         gMap?.setOnCameraIdleListener(this)
     }
 

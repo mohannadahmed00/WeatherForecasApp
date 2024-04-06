@@ -132,6 +132,33 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_locations_title"
+        app:layout_constraintBottom_toTopOf="@id/tv_type_title"/>
+
+    <TextView
+        android:id="@+id/tv_type_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Alert Type:"
+        android:textColor="@color/red"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@id/rv_types"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rv_locations" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_types"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="horizontal"
+        tools:itemCount="5"
+        tools:listitem="@layout/location_item"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_type_title"
         app:layout_constraintBottom_toTopOf="@id/btn_confirm"/>
 
 
@@ -146,7 +173,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rv_locations" />
+        app:layout_constraintTop_toBottomOf="@+id/rv_types" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

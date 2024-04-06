@@ -22,7 +22,7 @@
     <style name="toggle_button_style" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="strokeColor">@color/toggle_selector</item>
         <item name="android:textColor">@color/toggle_selector</item>
-        <item name="backgroundTint">@color/white</item>
+        <!--<item name="backgroundTint">@color/white</item>-->
         <item name="rippleColor">@color/ripple_selector</item>
     </style>
 

@@ -3,6 +3,7 @@ package com.giraffe.weatherforecasapplication.features.alerts.view
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -27,6 +28,7 @@ import com.giraffe.weatherforecasapplication.network.ApiClient
 import com.giraffe.weatherforecasapplication.utils.UiState
 import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
 import kotlinx.coroutines.launch
+import android.provider.Settings
 
 class AlertsFragment : Fragment(), BottomSheet.OnBottomSheetDismiss {
     companion object {
@@ -40,6 +42,17 @@ class AlertsFragment : Fragment(), BottomSheet.OnBottomSheetDismiss {
     private lateinit var itemTouchHelper: ItemTouchHelper
     private lateinit var onDrawerClick: OnDrawerClick
 
+    // method to ask user to grant the Overlay permission
+    private fun checkOverlayPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(requireContext())) {
+                // send user to the device settings
+                val myIntent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                startActivity(myIntent);
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate: ")
         super.onCreate(savedInstanceState)
@@ -47,6 +60,7 @@ class AlertsFragment : Fragment(), BottomSheet.OnBottomSheetDismiss {
             ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
         viewModel = ViewModelProvider(this, factory)[AlertsVM::class.java]
         adapter = AlertsAdapter(mutableListOf())
+        checkOverlayPermission()
 
         val simpleItemTouchCallback: ItemTouchHelper.SimpleCallback = object :
             ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {

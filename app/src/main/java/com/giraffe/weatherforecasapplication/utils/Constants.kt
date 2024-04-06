@@ -24,6 +24,8 @@ object Constants {
     const val WORKER_FLAG = "WORKER_FLAG"
     const val WORKER_ON = "WORKER_ON"
     const val WORKER_OFF = "WORKER_OFF"
+    const val SELECTED_FORECAST = "SELECTED_FORECAST"
+    const val ALERT_TYPE = "ALERT_TYPE"
 
 
 
@@ -48,7 +50,7 @@ object Constants {
         const val MILES = "MILES"
     }
 
-    object AlertType{
+    object AlertTypes{
         const val ALARM = "ALARM"
         const val NOTIFICATION = "NOTIFICATION"
     }

@@ -17,7 +17,7 @@ class HomeVM(private val repo: RepoInterface) : ViewModel() {
         MutableStateFlow<UiState<ForecastModel?>>(UiState.Loading)
     val forecast: StateFlow<UiState<ForecastModel?>> = _forecast.asStateFlow()
 
-    fun getCurrentForecast() {
+    /*fun getCurrentForecast() {
         _forecast.value = UiState.Loading
         viewModelScope.launch(Dispatchers.IO) {
             repo.getCurrent()
@@ -28,6 +28,6 @@ class HomeVM(private val repo: RepoInterface) : ViewModel() {
                     _forecast.emit(it)
                 }
         }
-    }
+    }*/
 }
 

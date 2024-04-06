@@ -62,7 +62,7 @@ class RepoTest {
     @Test
     fun getAllFavorites_15Forecasts()  = runBlocking {
         //When: call getAllFavorites
-        repo.getAllFavorites().collect{
+        repo.getFavorites().collect{
             //Then: get the 15 forecasts from local
             it as UiState.Success
             assertThat(it.data.size).isEqualTo(16)
@@ -72,8 +72,8 @@ class RepoTest {
     @Test
     fun insertForecast_newForecast_16Forecasts() = runBlocking{
         //When: call insertForecast with the new forecast
-        repo.insertForecast(forecastModel).collect{}
-        repo.getAllFavorites().collect{
+        repo.insertFavorite(forecastModel).collect{}
+        repo.getFavorites().collect{
             //Then: get the 16 forecasts from local
             it as UiState.Success
             assertThat(it.data.size).isEqualTo(16)
@@ -84,7 +84,7 @@ class RepoTest {
     fun deleteCurrent_forecastsWithoutCurrentEgypt() = runBlocking{
         //When: call deleteCurrent
         repo.deleteCurrent()
-        repo.getAllFavorites().collect{
+        repo.getFavorites().collect{
             //Then: there is no forecast to egypt
             it as UiState.Success
             assertThat(it.data).doesNotContain(forecastModel)
@@ -104,8 +104,8 @@ class RepoTest {
     @Test
     fun deleteForecast_egypt_getAllForecastsWithoutEgypt() = runBlocking {
         //When: call deleteForecast with egypt
-        repo.deleteForecast(forecastModel).collect{}
-        repo.getAllFavorites().collect{
+        repo.deleteFavorite(forecastModel).collect{}
+        repo.getFavorites().collect{
             //Then: there is no forecast to egypt
             it as UiState.Success
             assertThat(it.data).doesNotContain(forecastModel)
@@ -115,8 +115,8 @@ class RepoTest {
     @Test
     fun deleteAllForecasts_getNoForecasts() = runBlocking {
         //When: call deleteAllForecasts
-        repo.deleteAllForecasts()
-        repo.getAllFavorites().collect{
+        repo.deleteFavorites()
+        repo.getFavorites().collect{
             //Then: there is no forecasts
             it as UiState.Fail
             assertThat(it.error).isEqualTo("empty list")

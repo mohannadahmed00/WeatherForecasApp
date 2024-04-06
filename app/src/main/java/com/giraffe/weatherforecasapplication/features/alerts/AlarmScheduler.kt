@@ -16,6 +16,7 @@ class AlarmScheduler(private val context: Context) : IAlarmScheduler {
                 putExtra(Constants.CLICKED_ALERT_ID, item.id)
                 putExtra(Constants.EXTRA_LAT, item.lat)
                 putExtra(Constants.EXTRA_LON, item.lon)
+                putExtra(Constants.ALERT_TYPE, item.type)
             }
             alarmManager.setAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
@@ -34,6 +35,7 @@ class AlarmScheduler(private val context: Context) : IAlarmScheduler {
                 putExtra(Constants.EXTRA_LAT, item.lat)
                 putExtra(Constants.EXTRA_LON, item.lon)
                 putExtra(Constants.WORKER_FLAG, Constants.WORKER_ON)
+                putExtra(Constants.ALERT_TYPE, item.type)
             }
             alarmManager.setAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,

@@ -12,8 +12,8 @@
     <string name="k">K</string>
     <string name="f">°F</string>
     <string name="c">°C</string>
-    <string name="miles_hour">miles/hour</string>
-    <string name="metre_sec">metre/sec</string>
+    <string name="miles_hour">mph</string>
+    <string name="metre_sec">m/s</string>
     <string name="on">on</string>
     <string name="off">off</string>
     <string name="wind_speed_unit">Wind Speed Unit</string>

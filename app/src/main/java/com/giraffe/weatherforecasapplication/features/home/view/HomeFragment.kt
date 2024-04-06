@@ -36,7 +36,7 @@ import com.giraffe.weatherforecasapplication.network.ApiClient
 import com.giraffe.weatherforecasapplication.utils.Constants
 import com.giraffe.weatherforecasapplication.utils.UiState
 import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
-import com.giraffe.weatherforecasapplication.utils.getAddress
+import com.giraffe.weatherforecasapplication.utils.getIconRes
 import com.giraffe.weatherforecasapplication.utils.toFahrenheit
 import com.giraffe.weatherforecasapplication.utils.toKelvin
 import com.giraffe.weatherforecasapplication.utils.toMilesPerHours
@@ -45,6 +45,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -64,63 +65,85 @@ class HomeFragment : Fragment() {
     private lateinit var dailyAdapter: DailyAdapter
     private lateinit var onDrawerClick: OnDrawerClick
     private lateinit var sharedVM: SharedVM
+    private lateinit var selectedForecast: ForecastModel
     private lateinit var tempUnit: String
     private lateinit var windSpeedUnit: String
+    private lateinit var favorites: List<ForecastModel>
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var location: Location? = null
-    private var currentLat: Double = 0.0
-    private var currentLon: Double = 0.0
+    private var selectedLat: Double = 0.0
+    private var selectedLon: Double = 0.0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i(TAG, "onCreate: ")
+        Log.v(TAG, "onCreate: ")
+        handleInit()
+        sharedVM.getFavorites()
+        sharedVM.getTempUnit()
+        sharedVM.getWindSpeedUnit()
+        observeFavorites()
+    }
+
+    private fun handleInit() {
         factory =
             ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
         viewModel = ViewModelProvider(this, factory)[HomeVM::class.java]
         sharedVM = ViewModelProvider(requireActivity(), factory)[SharedVM::class.java]
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
-
-        sharedVM.getTempUnit()
-        sharedVM.getWindSpeedUnit()
-        sharedVM.getFavorites()
-        observeTempUnit()
-        observeWindSpeedUnit()
     }
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.i(TAG, "onCreateView: ")
+        Log.v(TAG, "onCreateView: ")
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.i(TAG, "onViewCreated: ")
-        handleClicks()
-        handleInit()
+        Log.v(TAG, "onViewCreated: ")
+        handleAdapters()
         observeSelectedForecast()
+        handleClicks()
+
     }
 
+    private fun handleAdapters() {
+        Log.w(TAG, "handleAdapters: ")
+        hourlyAdapter = HourlyAdapter(mutableListOf(), sharedVM.tempUnit.value)
+        dailyAdapter = DailyAdapter(mutableListOf(), sharedVM.tempUnit.value)
+        binding.rvHourly.adapter = hourlyAdapter
+        binding.rvDaily.adapter = dailyAdapter
+    }
+
+    private var selectedForecastJob: Job? = null
     private fun observeSelectedForecast() {
-        showLoading()
-        lifecycleScope.launch {
+        selectedForecastJob = lifecycleScope.launch {
             sharedVM.selectedForecast.collect {
-                Log.d(TAG, "observeSelectedForecast: $it")
                 when (it) {
-                    is UiState.Fail -> {}
-                    UiState.Loading -> {
+                    is UiState.Fail -> {
+                        Log.e(TAG, "observeSelectedForecast: ${it.error}")
                         if (isConnected()) {
                             getLocation()
-                        } else {
-                            viewModel.getCurrentForecast()
                         }
                     }
 
+                    is UiState.Loading -> {
+                        Log.i(TAG, "observeSelectedForecast: loading")
+                        showLoading()
+                    }
+
                     is UiState.Success -> {
-                        it.data?.let { selectedForecast -> handleForecastUI(selectedForecast) }
+                        Log.d(TAG, "observeSelectedForecast: ${it.data}")
+                        Log.d(TAG, "observeSelectedForecast: isFavorite: ${it.data?.isFavorite}")
+                        hideLoading()
+                        it.data?.let { selectedForecast ->
+                            selectedLat = selectedForecast.lat
+                            selectedLon = selectedForecast.lon
+                            handleForecastUI(selectedForecast)
+                        }
                     }
                 }
 
@@ -129,8 +152,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun handleForecastUI(forecast: ForecastModel) {
-        Log.d(TAG, "handleForecastUI: $forecast")
-        hideLoading()
+        Log.w(TAG, "handleForecastUI: $forecast")
         handleCurrentTemp(forecast)
         handleTimeZone(forecast)
         handleCurrentIcon(forecast)
@@ -147,24 +169,55 @@ class HomeFragment : Fragment() {
         handleFavoriteIcon(forecast)
     }
 
-    private fun handleTimeZone(forecast: ForecastModel) {
-        if (forecast.timezone.contains('/')) {
-            binding.tvZone.text =
-                getAddress(requireContext(), forecast.lat, forecast.lon, forecast.timezone)
-        } else {
-            binding.tvZone.text = forecast.timezone
 
+    private fun handleClicks() {
+        Log.w(TAG, "handleClicks: ")
+        onDrawerClick = activity as OnDrawerClick
+        binding.ivMore.setOnClickListener {
+            onDrawerClick.onClick()
+        }
+        binding.ivLocation.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeFragmentToMapFragment()
+            action.lat = selectedLat.toFloat()
+            action.lon = selectedLon.toFloat()
+            findNavController().navigate(action)
+        }
+        binding.ivCurrentLocation.setOnClickListener {
+            if (isConnected()) {
+                getLocation()
+            } else {
+                sharedVM.getSelectedForecast()
+            }
         }
     }
 
+
+    private fun observeFavorites() {
+        lifecycleScope.launch {
+            sharedVM.favorites.collect {
+                Log.d(TAG, "observeFavorites: ${it.size}")
+                sharedVM.getSelectedForecast()
+            }
+        }
+    }
+
+
+    private fun handleTimeZone(forecast: ForecastModel) {
+        binding.tvZone.text = forecast.timezone
+
+    }
+
     private fun handleCurrentTemp(forecast: ForecastModel) {
-        binding.tvCurrentTemp.text = convertTempToString(forecast.current?.temp ?: 0.0, tempUnit)
+        binding.tvCurrentTemp.text =
+            convertTempToString(forecast.current?.temp ?: 0.0, sharedVM.tempUnit.value)
     }
 
     private fun handleCurrentIcon(forecast: ForecastModel) {
-        Glide.with(requireContext())
+        /*Glide.with(requireContext())
             .load("https://openweathermap.org/img/wn/${forecast.current?.weather?.get(0)?.icon}.png")
-            .into(binding.ivCurrent)
+            .into(binding.ivCurrent)*/
+
+        binding.ivCurrent.setImageResource(getIconRes(forecast.current?.weather?.get(0)?.icon?:""))
     }
 
 
@@ -179,7 +232,10 @@ class HomeFragment : Fragment() {
 
     private fun handleCurrentWind(forecast: ForecastModel) {
         binding.tvWind.text =
-            convertWindSpeedToString(forecast.current?.wind_speed ?: 0.0, windSpeedUnit)
+            convertWindSpeedToString(
+                forecast.current?.wind_speed ?: 0.0,
+                sharedVM.windSpeedUnit.value
+            )
     }
 
     private fun handleCurrentHumidity(forecast: ForecastModel) {
@@ -202,92 +258,26 @@ class HomeFragment : Fragment() {
         binding.tvDir.text = (forecast.current?.wind_deg ?: 0.0).toString().plus("°")
     }
 
-
     private fun handleFavoriteIcon(forecast: ForecastModel) {
-        Log.i(TAG, "handleFavoriteIcon:")
-        lifecycleScope.launch {
-            sharedVM.favorites.collect {
-                when (it) {
-                    is UiState.Fail -> {}
-                    UiState.Loading -> {}
-                    is UiState.Success -> {
-                        it.data.firstOrNull { fav ->
-                            (fav.lat + fav.lon) == (forecast.lat + forecast.lon)
-                        }.let { fav ->
-                            if (fav == null) {
-                                binding.ivFavorite.setColorFilter(
-                                    ContextCompat.getColor(
-                                        requireContext(),
-                                        R.color.gray
-                                    )
-                                )
-                                binding.ivFavorite.setOnClickListener {
-                                    sharedVM.insertForecast(forecast)
-                                    observeInsertion()
-                                }
-                            } else {
-                                binding.ivFavorite.setColorFilter(
-                                    ContextCompat.getColor(
-                                        requireContext(),
-                                        R.color.dark_red
-                                    )
-                                )
-                                binding.ivFavorite.setOnClickListener {
-                                    sharedVM.deleteForecast(forecast)
-                                    observeDeletion()
-                                }
-                            }
-                        }
-                    }
-                }
+        if (forecast.isFavorite) {
+            binding.ivFavorite.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.dark_red
+                )
+            )
+            binding.ivFavorite.setOnClickListener {
+                sharedVM.deleteFavorite(forecast)
             }
-        }
-
-
-    }
-
-    private fun observeInsertion() {
-        lifecycleScope.launch {
-            sharedVM.insert.collect {
-                when (it) {
-                    is UiState.Fail -> {}
-                    UiState.Loading -> {}
-                    is UiState.Success -> {
-                        sharedVM.getFavorites()
-                    }
-                }
-            }
-        }
-    }
-
-    private fun observeDeletion() {
-        lifecycleScope.launch {
-            sharedVM.delete.collect {
-                when (it) {
-                    is UiState.Fail -> {}
-                    UiState.Loading -> {}
-                    is UiState.Success -> {
-                        sharedVM.getFavorites()
-                    }
-                }
-            }
-        }
-    }
-
-    private fun observeWindSpeedUnit() {
-        lifecycleScope.launch {
-            sharedVM.windSpeedUnit.collect {
-                Log.d(TAG, "observeWindSpeedUnit: $it")
-                windSpeedUnit = it
-            }
-        }
-    }
-
-    private fun observeTempUnit() {
-        lifecycleScope.launch {
-            sharedVM.tempUnit.collect {
-                Log.d(TAG, "observeTempUnit: $it")
-                tempUnit = it
+        } else {
+            binding.ivFavorite.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.gray
+                )
+            )
+            binding.ivFavorite.setOnClickListener {
+                sharedVM.insertFavorite(forecast)
             }
         }
     }
@@ -308,38 +298,13 @@ class HomeFragment : Fragment() {
     private fun convertWindSpeedToString(speed: Double, windSpeedUnit: String): String {
         return when (windSpeedUnit) {
             Constants.WindSpeedUnits.METRE -> speed.toInt().toString()
-                .plus(getString(R.string.metre_sec))
+                .plus(" ${getString(R.string.metre_sec)}")
 
             Constants.WindSpeedUnits.MILES -> speed.toMilesPerHours().toInt().toString()
-                .plus(getString(R.string.miles_hour))
+                .plus(" ${getString(R.string.miles_hour)}")
 
             else -> "0.0"
         }
-    }
-
-    private fun handleClicks() {
-        onDrawerClick = activity as OnDrawerClick
-        binding.ivMore.setOnClickListener {
-            onDrawerClick.onClick()
-        }
-        binding.ivLocation.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToMapFragment()
-            findNavController().navigate(action)
-        }
-        binding.ivCurrentLocation.setOnClickListener {
-            if (isConnected()) {
-                getLocation()
-            } else {
-                viewModel.getCurrentForecast()
-            }
-        }
-    }
-
-    private fun handleInit() {
-        hourlyAdapter = HourlyAdapter(mutableListOf(), tempUnit)
-        dailyAdapter = DailyAdapter(mutableListOf(), tempUnit)
-        binding.rvHourly.adapter = hourlyAdapter
-        binding.rvDaily.adapter = dailyAdapter
     }
 
 
@@ -359,10 +324,10 @@ class HomeFragment : Fragment() {
 
         override fun onLocationResult(locationResult: LocationResult) {
             location = locationResult.lastLocation
-            currentLat = location?.latitude ?: 0.0
-            currentLon = location?.longitude ?: 0.0
-            Log.i(TAG, "onLocationResult: $currentLat , $currentLon ")
-            sharedVM.getForecast(currentLat, currentLon, true)
+            selectedLat = location?.latitude ?: 0.0
+            selectedLon = location?.longitude ?: 0.0
+            Log.i(TAG, "onLocationResult: $selectedLat , $selectedLon ")
+            sharedVM.getForecast(selectedLat, selectedLon)
             fusedLocationProviderClient.removeLocationUpdates(this)
         }
     }
@@ -424,6 +389,8 @@ class HomeFragment : Fragment() {
     @SuppressLint("MissingPermission")
     private fun requestNewLocationData() {
         Log.i(TAG, "requestNewLocationData: ")
+        //binding.homeShimmer.visibility = View.VISIBLE
+        showLoading()
         val locationRequest = LocationRequest().apply {
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             interval = 0
@@ -446,24 +413,50 @@ class HomeFragment : Fragment() {
 
     private fun showLoading() {
         binding.homeShimmer.startShimmer()
+        binding.mainUi.visibility = View.INVISIBLE
         binding.homeShimmer.visibility = View.VISIBLE
-        binding.cardView1.visibility = View.INVISIBLE
-        binding.rvDaily.visibility = View.INVISIBLE
-        binding.rvHourly.visibility = View.INVISIBLE
-        binding.ivCurrentLocation.visibility = View.INVISIBLE
-        binding.ivFavorite.visibility = View.INVISIBLE
-        binding.ivLocation.visibility = View.INVISIBLE
     }
 
     private fun hideLoading() {
-        binding.homeShimmer.hideShimmer()
+        binding.homeShimmer.stopShimmer()
+        binding.mainUi.visibility = View.VISIBLE
         binding.homeShimmer.visibility = View.INVISIBLE
-        binding.cardView1.visibility = View.VISIBLE
-        binding.rvDaily.visibility = View.VISIBLE
-        binding.rvHourly.visibility = View.VISIBLE
-        binding.ivCurrentLocation.visibility = View.VISIBLE
-        binding.ivFavorite.visibility = View.VISIBLE
-        binding.ivLocation.visibility = View.VISIBLE
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.v(TAG, "onStart: ")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.v(TAG, "onResume: ")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.v(TAG, "onPause: ")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.v(TAG, "onStop: ")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.v(TAG, "onDestroyView: ")
+        selectedForecastJob?.cancel()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.v(TAG, "onDestroy: ")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.v(TAG, "onDetach: ")
     }
 
 }

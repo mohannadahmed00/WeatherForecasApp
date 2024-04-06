@@ -2,6 +2,8 @@ package com.giraffe.weatherforecasapplication.network
 
 import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import com.giraffe.weatherforecasapplication.utils.Constants
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -10,7 +12,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-object ApiClient: RemoteSource {
+object ApiClient : RemoteSource {
     private fun provideOkHttpClient(): OkHttpClient {
         val httpClient = OkHttpClient.Builder()
         httpClient.addInterceptor { chain ->
@@ -35,11 +37,10 @@ object ApiClient: RemoteSource {
         .build().create(ApiServices::class.java)
 
 
-    override suspend fun getForecast(lat: Double, lon: Double,lang:String):Response<ForecastModel> {
-        return if(lang == Constants.Languages.ARABIC){
-            apiServices.getForecast(lat, lon,"ar")
-        }else{
-            apiServices.getForecast(lat, lon,"en")
+    override suspend fun getForecast(lat: Double, lon: Double, lang: String) =
+        if (lang == Constants.Languages.ARABIC) {
+            flow { emit(apiServices.getForecast(lat, lon, "ar")) }
+        } else {
+            flow { emit(apiServices.getForecast(lat, lon, "en")) }
         }
-    }
 }

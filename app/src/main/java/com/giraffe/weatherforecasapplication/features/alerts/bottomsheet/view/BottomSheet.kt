@@ -18,17 +18,18 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.giraffe.weatherforecasapplication.R
+import com.giraffe.weatherforecasapplication.SharedVM
 import com.giraffe.weatherforecasapplication.database.ConcreteLocalSource
 import com.giraffe.weatherforecasapplication.databinding.BottomSheetLayoutBinding
 import com.giraffe.weatherforecasapplication.features.alerts.AlarmScheduler
 import com.giraffe.weatherforecasapplication.features.alerts.bottomsheet.view.adapters.LocationsAdapter
+import com.giraffe.weatherforecasapplication.features.alerts.bottomsheet.view.adapters.TypesAdapter
 import com.giraffe.weatherforecasapplication.features.alerts.bottomsheet.viewmodel.BottomSheetVM
 import com.giraffe.weatherforecasapplication.model.alert.AlertItem
 import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import com.giraffe.weatherforecasapplication.model.repo.Repo
 import com.giraffe.weatherforecasapplication.network.ApiClient
 import com.giraffe.weatherforecasapplication.utils.Constants
-import com.giraffe.weatherforecasapplication.utils.UiState
 import com.giraffe.weatherforecasapplication.utils.ViewModelFactory
 import com.giraffe.weatherforecasapplication.utils.getAddress
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -38,8 +39,9 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 
-class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : BottomSheetDialogFragment(), DatePickerDialog.OnDateSetListener,
-    TimePickerDialog.OnTimeSetListener,LocationsAdapter.OnLocationClick {
+class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) :
+    BottomSheetDialogFragment(), DatePickerDialog.OnDateSetListener,
+    TimePickerDialog.OnTimeSetListener, LocationsAdapter.OnLocationClick, TypesAdapter.OnTypeClick {
     companion object {
         const val TAG = "BottomSheetFragment"
         const val REQUEST_CODE = 1001
@@ -49,7 +51,10 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
     private lateinit var binding: BottomSheetLayoutBinding
     private lateinit var viewModel: BottomSheetVM
     private lateinit var factory: ViewModelFactory
-    private lateinit var adapter: LocationsAdapter
+    private lateinit var locationsAdapter: LocationsAdapter
+    private lateinit var typesAdapter: TypesAdapter
+    private lateinit var sharedVM: SharedVM
+
 
     //=================alarm work area=================
     private lateinit var alarmScheduler: AlarmScheduler
@@ -79,14 +84,24 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
     private var startFlag: Boolean = false
     private var endFlag: Boolean = false
 
-    private var type:String? = null
-    private var forecast:ForecastModel? = null
+    //private var type:String? = null
+    private var forecast: ForecastModel? = null
+    private var alertType: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        factory = ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
+        factory =
+            ViewModelFactory(Repo.getInstance(ApiClient, ConcreteLocalSource(requireContext())))
         viewModel = ViewModelProvider(this, factory)[BottomSheetVM::class.java]
-        adapter = LocationsAdapter(mutableListOf(),this)
+        locationsAdapter = LocationsAdapter(mutableListOf(), this)
+        typesAdapter = TypesAdapter(
+            mutableListOf(
+                Constants.AlertTypes.NOTIFICATION,
+                Constants.AlertTypes.ALARM
+            ), this
+        )
+        sharedVM = ViewModelProvider(requireActivity(), factory)[SharedVM::class.java]
+
 
         //=================alarm work area=================
         alarmScheduler = AlarmScheduler(requireContext())
@@ -99,27 +114,17 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
             requestPermissions()
         }
 
-        viewModel.getFavorites()
+        sharedVM.getFavorites()
 
     }
 
     private fun observeFavorites() {
         lifecycleScope.launch {
-            viewModel.favorites.collect {
-                when (it) {
-                    is UiState.Fail -> {
-
-                    }
-                    UiState.Loading -> {
-
-                    }
-                    is UiState.Success -> {
-                        val list = it.data.map { f->
-                            LocationItem(f,false)
-                        }
-                        adapter.updateList(list)
-                    }
+            sharedVM.favorites.collect {
+                val list = it.map { f ->
+                    LocationItem(f, false)
                 }
+                locationsAdapter.updateList(list)
             }
 
         }
@@ -136,18 +141,16 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvLocations.adapter = adapter
+        binding.rvLocations.adapter = locationsAdapter
+        binding.rvTypes.adapter = typesAdapter
         observeFavorites()
-
-        observeInsertion()
-
-        binding.cgType.setOnCheckedChangeListener { _, checkedId ->
+        /*binding.cgType.setOnCheckedChangeListener { _, checkedId ->
             if (checkedId== R.id.chip_alarm){
-                type = Constants.AlertType.ALARM
+                type = Constants.AlertTypes.ALARM
             }else if (checkedId == R.id.chip_notification){
-                type = Constants.AlertType.NOTIFICATION
+                type = Constants.AlertTypes.NOTIFICATION
             }
-        }
+        }*/
 
         binding.tvStartDateTime.setOnClickListener {
             startFlag = true
@@ -164,25 +167,28 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
         }
 
         binding.btnConfirm.setOnClickListener {
-            if (validate()){
-                val lat = forecast?.lat?:0.0
-                val lon = forecast?.lon?:0.0
-                val locationName = getAddress(requireContext(),lat,lon,forecast?.timezone?:"null,")
-                val startLocalDate = LocalDateTime.of(startYear, startMonth + 1, startDay, startHour, startMinute, 1)
-                if (endMinute!=-1 && endHour!=-1 &&endDay!=-1 &&endMonth!=-1 &&endYear!=-1){
-                    val endLocalDate = LocalDateTime.of(endYear, endMonth + 1, endDay, endHour, endMinute, 1)
+            if (validate()) {
+                val lat = forecast?.lat ?: 0.0
+                val lon = forecast?.lon ?: 0.0
+                val locationName =
+                    getAddress(requireContext(), lat, lon, forecast?.timezone ?: "null,")
+                val startLocalDate =
+                    LocalDateTime.of(startYear, startMonth + 1, startDay, startHour, startMinute, 1)
+                if (endMinute != -1 && endHour != -1 && endDay != -1 && endMonth != -1 && endYear != -1) {
+                    val endLocalDate =
+                        LocalDateTime.of(endYear, endMonth + 1, endDay, endHour, endMinute, 1)
                     alertItem = AlertItem(
                         startLocalDate,
-                        type?:Constants.AlertType.NOTIFICATION,
+                        alertType ?: Constants.AlertTypes.ALARM,
                         locationName,
                         lat,
                         lon,
                         endLocalDate
                     )
-                }else{
+                } else {
                     alertItem = AlertItem(
                         startLocalDate,
-                        type?:Constants.AlertType.NOTIFICATION,
+                        alertType ?: Constants.AlertTypes.ALARM,
                         locationName,
                         lat,
                         lon
@@ -194,24 +200,6 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
                     onBottomSheetDismiss.onBottomSheetDismiss(this)
                 }
                 dismiss()
-            }
-        }
-    }
-
-    private fun observeInsertion() {
-        lifecycleScope.launch {
-            viewModel.alert.collect{
-                when(it){
-                    is UiState.Fail -> {
-                        Log.e(TAG, "observeInsertion: ${it.error}")
-                    }
-                    UiState.Loading -> {
-                        Log.d(TAG, "loading...")
-                    }
-                    is UiState.Success -> {
-                        Log.e(TAG, "success insertion")
-                    }
-                }
             }
         }
     }
@@ -243,11 +231,29 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
         if (startFlag) {
             startHour = hourOfDay
             startMinute = minute
-            binding.tvStartDateTime.text = formatLocalDateTime(LocalDateTime.of(startYear, startMonth+1, startDay, startHour, startMinute, 10))
+            binding.tvStartDateTime.text = formatLocalDateTime(
+                LocalDateTime.of(
+                    startYear,
+                    startMonth + 1,
+                    startDay,
+                    startHour,
+                    startMinute,
+                    10
+                )
+            )
         } else if (endFlag) {
             endHour = hourOfDay
             endMinute = minute
-            binding.tvEndDateTime.text = formatLocalDateTime(LocalDateTime.of(endYear, endMonth+1, endDay, endHour, endMinute, 10))
+            binding.tvEndDateTime.text = formatLocalDateTime(
+                LocalDateTime.of(
+                    endYear,
+                    endMonth + 1,
+                    endDay,
+                    endHour,
+                    endMinute,
+                    10
+                )
+            )
         }
     }
 
@@ -268,7 +274,8 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
             Constants.ALERT_CHANNEL_ID,
             NotificationManager.IMPORTANCE_HIGH
         )
-        val notificationManager = requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
     }
 
@@ -295,17 +302,15 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
     ) {
         if (requestCode == REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //getLocation()
-                //showNotification()
                 createNotificationChannel()
                 createAlertsChannel()
             }
         }
     }
 
-    data class LocationItem(val forecast:ForecastModel,var isSelected:Boolean)
+    data class LocationItem(val forecast: ForecastModel, var isSelected: Boolean)
 
-    override fun onClick(forecast: ForecastModel) {
+    override fun onLocationClick(forecast: ForecastModel) {
         this.forecast = forecast
     }
 
@@ -315,16 +320,20 @@ class BottomSheet(private val onBottomSheetDismiss: OnBottomSheetDismiss) : Bott
     }
 
 
-    private fun validate():Boolean{
-        //if (type==null) return false
-        if (startMinute==-1 || startHour==-1 ||startDay==-1 ||startMonth==-1 ||startYear==-1) return false
-        //if (endMinute==-1 || endHour==-1 ||endDay==-1 ||endMonth==-1 ||endYear==-1) return false
+    private fun validate(): Boolean {
+        if (startMinute == -1 || startHour == -1 || startDay == -1 || startMonth == -1 || startYear == -1) return false
         if (forecast == null) return false
+        if (alertType == null) return false
 
         return true
     }
 
-    interface OnBottomSheetDismiss{
+    interface OnBottomSheetDismiss {
         fun onBottomSheetDismiss(alertItem: AlertItem)
+    }
+
+    override fun onTypeClick(alertType: String) {
+        Log.d(TAG, "onTypeClick: $alertType")
+        this.alertType = alertType
     }
 }

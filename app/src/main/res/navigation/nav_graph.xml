@@ -32,5 +32,16 @@
         android:id="@+id/mapFragment"
         android:name="com.giraffe.weatherforecasapplication.features.map.view.MapFragment"
         android:label="fragment_map"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map" >
+        <argument
+            android:name="lat"
+            app:argType="float"
+            app:nullable="false"
+            android:defaultValue="0.0" />
+        <argument
+            android:name="lon"
+            app:argType="float"
+            app:nullable="false"
+            android:defaultValue="0.0" />
+    </fragment>
 </navigation>

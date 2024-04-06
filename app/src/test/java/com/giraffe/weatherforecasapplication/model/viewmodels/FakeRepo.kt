@@ -21,20 +21,20 @@ class FakeRepo(
         return flow { UiState.Success(fakeRemoteSource.getForecast(lat,lon,fakeLocalSource.getLanguage()).body()) }
     }
 
-    override suspend fun getAllFavorites(): Flow<UiState<List<ForecastModel>>> {
-        return flow { UiState.Success(fakeLocalSource.getAllFavorites()) }
+    override suspend fun getFavorites(): Flow<UiState<List<ForecastModel>>> {
+        return flow { UiState.Success(fakeLocalSource.getFavorites()) }
     }
 
-    override suspend fun insertForecast(forecast: ForecastModel): Flow<UiState<Long>> {
-        return flow { UiState.Success(fakeLocalSource.insertForecast(forecast)) }
+    override suspend fun insertFavorite(forecast: ForecastModel): Flow<UiState<Long>> {
+        return flow { UiState.Success(fakeLocalSource.insertFavorite(forecast)) }
     }
 
-    override suspend fun deleteForecast(forecast: ForecastModel): Flow<UiState<Int>> {
-        return flow { UiState.Success(fakeLocalSource.deleteForecast(forecast)) }
+    override suspend fun deleteFavorite(forecast: ForecastModel): Flow<UiState<Int>> {
+        return flow { UiState.Success(fakeLocalSource.deleteFavorite(forecast)) }
     }
 
-    override suspend fun deleteAllForecasts() {
-        fakeLocalSource.deleteAllForecasts()
+    override suspend fun deleteFavorites() {
+        fakeLocalSource.deleteFavorites()
     }
 
     override suspend fun deleteCurrent() {
@@ -45,8 +45,8 @@ class FakeRepo(
         return flow { UiState.Success(fakeLocalSource.getCurrent()) }
     }
 
-    override suspend fun getAllAlerts(): Flow<UiState<List<AlertItem>>> {
-        return flow { UiState.Success(fakeLocalSource.getAllAlerts()) }
+    override suspend fun getAlerts(): Flow<UiState<List<AlertItem>>> {
+        return flow { UiState.Success(fakeLocalSource.getAlerts()) }
     }
 
     override suspend fun insertAlert(alertItem: AlertItem): Flow<UiState<Long>> {

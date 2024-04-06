@@ -16,15 +16,17 @@
 
         <TextView
             android:id="@+id/tv_day"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            app:layout_constraintVertical_bias="0"
             android:layout_height="wrap_content"
             style="@style/text_withe_20"
-            android:textColor="@color/gray"
+            android:textColor="@color/white"
             android:textStyle="normal"
             android:maxLines="1"
+            app:layout_constraintHorizontal_weight="2"
             android:ellipsize="end"
             app:layout_constraintBottom_toBottomOf="@+id/tv_des"
-            app:layout_constraintEnd_toStartOf="@id/iv_weather"
+            app:layout_constraintEnd_toStartOf="@id/tv_des"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/iv_weather"
@@ -36,21 +38,23 @@
             android:layout_height="50dp"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toTopOf="@id/tv_des"
-            app:layout_constraintEnd_toStartOf="@id/tv_temp"
-            app:layout_constraintStart_toEndOf="@id/tv_day"
+            app:layout_constraintEnd_toEndOf="@id/tv_des"
+            app:layout_constraintStart_toStartOf="@id/tv_des"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/sun" />
+            tools:src="@drawable/yellow_sun" />
 
         <TextView
             android:id="@+id/tv_des"
             style="@style/text_withe_bold_16"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:textColor="@color/red"
             android:textStyle="normal"
+            android:textAlignment="center"
+            app:layout_constraintHorizontal_weight="1"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/iv_weather"
-            app:layout_constraintStart_toStartOf="@+id/iv_weather"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_day"
             app:layout_constraintTop_toBottomOf="@+id/iv_weather"
             tools:text="Light Rain" />
 
@@ -60,10 +64,12 @@
             android:textColor="@color/gray"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_des"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/iv_weather"
-            app:layout_constraintTop_toTopOf="@+id/iv_weather"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="1"
+            app:layout_constraintEnd_toEndOf="@id/tv_day"
+            app:layout_constraintStart_toStartOf="@id/tv_day"
+            app:layout_constraintTop_toBottomOf="@id/tv_day"
             tools:text="32°" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

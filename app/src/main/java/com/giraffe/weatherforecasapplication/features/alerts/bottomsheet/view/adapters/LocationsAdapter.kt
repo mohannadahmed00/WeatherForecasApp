@@ -2,14 +2,12 @@ package com.giraffe.weatherforecasapplication.features.alerts.bottomsheet.view.a
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.giraffe.weatherforecasapplication.R
 import com.giraffe.weatherforecasapplication.databinding.LocationItemBinding
 import com.giraffe.weatherforecasapplication.features.alerts.bottomsheet.view.BottomSheet
 import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
-import com.giraffe.weatherforecasapplication.utils.Constants
 import com.giraffe.weatherforecasapplication.utils.getAddress
 
 class LocationsAdapter(
@@ -43,11 +41,11 @@ class LocationsAdapter(
 
 
         if (position == selectedItemPosition) {
-            holder.binding.root.setCardBackgroundColor(context.getColor(R.color.red))
-            holder.binding.tvLocation.setTextColor(context.getColor(R.color.white))
-        } else {
-            holder.binding.root.setCardBackgroundColor(context.getColor(R.color.white))
+            //holder.binding.root.setCardBackgroundColor(context.getColor(R.color.red))
             holder.binding.tvLocation.setTextColor(context.getColor(R.color.red))
+        } else {
+            //holder.binding.root.setCardBackgroundColor(context.getColor(R.color.white))
+            holder.binding.tvLocation.setTextColor(context.getColor(R.color.gray))
         }
 
         holder.binding.root.setOnClickListener {
@@ -56,7 +54,7 @@ class LocationsAdapter(
                 selectedItemPosition = position
                 notifyItemChanged(previousSelectedItemPosition)
                 notifyItemChanged(selectedItemPosition)
-                onLocationClick.onClick(item.forecast)
+                onLocationClick.onLocationClick(item.forecast)
             }
         }
     }
@@ -66,6 +64,6 @@ class LocationsAdapter(
 
 
     interface OnLocationClick {
-        fun onClick(forecast: ForecastModel)
+        fun onLocationClick(forecast: ForecastModel)
     }
 }

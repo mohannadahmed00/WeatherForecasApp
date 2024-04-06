@@ -5,17 +5,20 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
+import com.giraffe.weatherforecasapplication.R
 import com.giraffe.weatherforecasapplication.databinding.FavoriteItemBinding
 import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
+import com.giraffe.weatherforecasapplication.utils.getIconRes
 
 class FavoritesAdapter(val list: MutableList<ForecastModel>, private val onSelectClick: OnSelectClick) : Adapter<FavoritesAdapter.FavoriteVH>() {
 
     inner class FavoriteVH(private val binding: FavoriteItemBinding) : ViewHolder(binding.root) {
         fun bind(item: ForecastModel) {
             binding.tvZone.text = item.timezone
-            Glide.with(binding.root.context)
+            /*Glide.with(binding.root.context)
                 .load("https://openweathermap.org/img/wn/${item.current?.weather?.get(0)?.icon}.png")
-                .into(binding.ivWeather)
+                .into(binding.ivIcon)*/
+            binding.ivIcon.setImageResource(getIconRes(item.current?.weather?.get(0)?.icon?:""))
             binding.tvDes.text = item.current?.weather?.get(0)?.description ?: "no description"
             binding.root.setOnClickListener{
                 onSelectClick.onSelectClick(item)

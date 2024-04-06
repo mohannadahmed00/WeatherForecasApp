@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,53 +11,49 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:padding="18dp">
+        <ImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_zone"
+            app:layout_constraintEnd_toStartOf="@id/tv_zone"
+            app:layout_constraintBottom_toBottomOf="@id/tv_des"
+            />
 
         <TextView
             android:id="@+id/tv_zone"
             style="@style/text_withe_20"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/gray"
+            android:textColor="@color/white"
             android:textStyle="normal"
             android:maxLines="1"
             android:ellipsize="end"
             app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_des"
-            app:layout_constraintEnd_toStartOf="@id/tv_des"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/iv_weather"
-            tools:text="Cairddddddddddddddddddddddddddddddddddddddo" />
-
-        <ImageView
-            android:id="@+id/iv_weather"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:scaleType="centerCrop"
             app:layout_constraintBottom_toTopOf="@id/tv_des"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tv_zone"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toEndOf="@id/iv_icon"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/sun" />
+            tools:text="Cairo" />
 
         <TextView
             android:id="@+id/tv_des"
             style="@style/text_withe_bold_16"
-            android:textStyle="normal"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/red"
+            android:textColor="@color/gray"
+            android:textStyle="normal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/iv_weather"
-            app:layout_constraintStart_toStartOf="@+id/iv_weather"
-            app:layout_constraintTop_toBottomOf="@+id/iv_weather"
+            app:layout_constraintEnd_toEndOf="@id/tv_zone"
+            app:layout_constraintStart_toStartOf="@+id/tv_zone"
+            app:layout_constraintTop_toBottomOf="@+id/tv_zone"
             tools:text="Light Rain" />
-
-
-
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 </androidx.cardview.widget.CardView>

@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.giraffe.weatherforecasapplication.SharedVM
 import com.giraffe.weatherforecasapplication.features.alerts.bottomsheet.viewmodel.BottomSheetVM
 import com.giraffe.weatherforecasapplication.features.alerts.viewmodel.AlertsVM
-import com.giraffe.weatherforecasapplication.features.favorites.viewmodel.FavoritesVM
 import com.giraffe.weatherforecasapplication.features.home.viewmodel.HomeVM
 import com.giraffe.weatherforecasapplication.features.map.viewmodel.MapVM
 import com.giraffe.weatherforecasapplication.features.settings.viewmodel.SettingsVM
@@ -16,9 +15,7 @@ class ViewModelFactory(private val repo: RepoInterface) : ViewModelProvider.Fact
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(HomeVM::class.java)) {
             HomeVM(repo) as T
-        } else if (modelClass.isAssignableFrom(FavoritesVM::class.java)) {
-            FavoritesVM(repo) as T
-        } else if (modelClass.isAssignableFrom(AlertsVM::class.java)) {
+        }else if (modelClass.isAssignableFrom(AlertsVM::class.java)) {
             AlertsVM(repo) as T
         } else if (modelClass.isAssignableFrom(SettingsVM::class.java)) {
             SettingsVM(repo) as T

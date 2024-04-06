@@ -9,6 +9,7 @@ import com.giraffe.weatherforecasapplication.R
 import com.giraffe.weatherforecasapplication.databinding.HourlyItemBinding
 import com.giraffe.weatherforecasapplication.model.forecast.Hourly
 import com.giraffe.weatherforecasapplication.utils.Constants
+import com.giraffe.weatherforecasapplication.utils.getIconRes
 import com.giraffe.weatherforecasapplication.utils.toFahrenheit
 import com.giraffe.weatherforecasapplication.utils.toKelvin
 import java.text.SimpleDateFormat
@@ -21,9 +22,10 @@ class HourlyAdapter(private val list: MutableList<Hourly>, val tempUnit:String) 
     inner class HourlyVH(private val binding: HourlyItemBinding) : ViewHolder(binding.root) {
         fun bind(item: Hourly) {
             binding.tvTime.text = unixTimeToReadableDate(item.dt.toLong())
-            Glide.with(binding.root.context)
+            /*Glide.with(binding.root.context)
                 .load("https://openweathermap.org/img/wn/${item.weather[0].icon}.png")
-                .into(binding.ivWeather)
+                .into(binding.ivWeather)*/
+            binding.ivWeather.setImageResource(getIconRes(item.weather[0].icon))
             binding.tvTemp.text= convertTempToString(item.temp, tempUnit)//item.temp.toInt().toString().plus("°")
         }
 

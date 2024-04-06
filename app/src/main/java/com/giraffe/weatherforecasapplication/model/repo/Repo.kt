@@ -1,17 +1,11 @@
 package com.giraffe.weatherforecasapplication.model.repo
 
-import android.util.Log
 import com.giraffe.weatherforecasapplication.database.LocalSource
 import com.giraffe.weatherforecasapplication.model.alert.AlertItem
 import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import com.giraffe.weatherforecasapplication.network.RemoteSource
-import com.giraffe.weatherforecasapplication.utils.UiState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 class Repo private constructor(
     private val remoteSource: RemoteSource,
@@ -31,122 +25,32 @@ class Repo private constructor(
 
     override suspend fun getForecast(
         lat: Double,
-        lon: Double,
-        isCurrent: Boolean
-    ): Flow<UiState<ForecastModel?>> {
-        return flow {
-            try {
-                val response = remoteSource.getForecast(lat, lon, localSource.getLanguage())
-                if (response.isSuccessful) {
-                    emit(UiState.Success(response.body()))
-                } else {
-                    emit(UiState.Fail(response.message()))
-                }
-            } catch (e: Exception) {
-                emit(UiState.Fail(e.message ?: "unknown error"))
-            }
-            //remoteSource.getForecast(lat, lon)
-        }.onStart { UiState.Loading }
-    }
-
-    override suspend fun getAllFavorites(): Flow<UiState<List<ForecastModel>>> {
-        return flow {
-            try {
-                val response = localSource.getAllFavorites()
-                if (response.isNotEmpty()) {
-                    emit(UiState.Success(response))
-                } else {
-                    emit(UiState.Fail("empty list"))
-                }
-            } catch (e: Exception) {
-                emit(UiState.Fail(e.message ?: "unknown error"))
-            }
-        }.onStart { UiState.Loading }.flowOn(Dispatchers.IO)
-    }
-
-    override suspend fun insertForecast(forecast: ForecastModel): Flow<UiState<Long>> {
-        return flow {
-            try {
-                val response = localSource.insertForecast(forecast)
-                if (response > 0) {
-                    emit(UiState.Success(response))
-                } else {
-                    emit(UiState.Fail("fail insertion"))
-                }
-            } catch (e: Exception) {
-                emit(UiState.Fail(e.message ?: "unknown error"))
-            }
-        }.onStart { UiState.Loading }.flowOn(Dispatchers.IO)
-
-    }
-
-    override suspend fun deleteCurrent() = localSource.deleteCurrent()
-    override suspend fun getCurrent(): Flow<UiState<ForecastModel?>> {
-        return flow {
-            try {
-                val response = localSource.getCurrent()
-                if (response != null) {
-                    emit(UiState.Success(response))
-                } else {
-                    emit(UiState.Fail("no stored current"))
-                }
-            } catch (e: Exception) {
-                emit(UiState.Fail(e.message ?: "unknown error"))
-            }
-        }.onStart { UiState.Loading }.flowOn(Dispatchers.IO)
-    }
-
-    override suspend fun getAllAlerts(): Flow<UiState<List<AlertItem>>> {
-        return flow {
-            try {
-                val response = localSource.getAllAlerts()
-                emit(UiState.Success(response))
-            } catch (e: Exception) {
-                emit(UiState.Fail(e.message ?: "unknown error"))
-            }
-        }.onStart { UiState.Loading }.flowOn(Dispatchers.IO)
-    }
-
-    override suspend fun insertAlert(alertItem: AlertItem): Flow<UiState<Long>> {
-        return flow {
-            try {
-                val response = localSource.insertAlert(alertItem)
-                emit(UiState.Success(response))
-            } catch (e: Exception) {
-                emit(UiState.Fail(e.message ?: "unknown error"))
-            }
-        }.onStart { UiState.Loading }.flowOn(Dispatchers.IO)
-    }
-
-    override suspend fun deleteAlert(alertId: Int) {
-        localSource.deleteAlert(alertId)
-    }
+        lon: Double
+    ) = remoteSource.getForecast(lat, lon, localSource.getLanguage().first()).map { it.body() }
 
 
-    override suspend fun deleteForecast(forecast: ForecastModel): Flow<UiState<Int>> {
-        return flow {
-            try {
-                val response = localSource.deleteForecast(forecast)
-                if (response > 0) {
-                    emit(UiState.Success(response))
-                } else {
-                    emit(UiState.Fail("deletion failed"))
-                }
-            } catch (e: Exception) {
-                emit(UiState.Fail(e.message ?: "unknown error"))
-            }
-        }.onStart { UiState.Loading }
-    }
+    override suspend fun getFavorites() = localSource.getFavorites()
 
-    override suspend fun deleteAllForecasts() = localSource.deleteAllForecasts()
-    override suspend fun getLanguage() = flow { emit(localSource.getLanguage()) }
+    override suspend fun insertFavorite(forecast: ForecastModel) =
+        localSource.insertFavorite(forecast)
+
+    override suspend fun getAlerts() = localSource.getAlerts()
+
+    override suspend fun insertAlert(alertItem: AlertItem) = localSource.insertAlert(alertItem)
+
+    override suspend fun deleteAlert(alertId: Int) = localSource.deleteAlert(alertId)
 
 
-    override suspend fun getTempUnit() = flow { emit(localSource.getTempUnit()) }
+    override suspend fun deleteFavorite(timezone:String) =
+        localSource.deleteFavorite(timezone)
 
-    override suspend fun getWindSpeedUnit() = flow { emit(localSource.getWindSpeedUnit()) }
+    override suspend fun deleteFavorites() = localSource.deleteFavorites()
+    override suspend fun getLanguage() = localSource.getLanguage()
+    override suspend fun getTempUnit() = localSource.getTempUnit()
 
-    override suspend fun getNotificationFlag() = flow { emit(localSource.getNotificationFlag()) }
+    override suspend fun getWindSpeedUnit() = localSource.getWindSpeedUnit()
+
+    override suspend fun getNotificationFlag() = localSource.getNotificationFlag()
 
     override suspend fun setLanguage(lang: String) = localSource.setLanguage(lang)
 
@@ -156,5 +60,10 @@ class Repo private constructor(
 
     override suspend fun setNotificationFlag(notifyFlag: Boolean) =
         localSource.setNotificationFlag(notifyFlag)
+
+    override suspend fun setSelectedForecast(forecast: ForecastModel) =
+        localSource.setSelectedForecast(forecast)
+
+    override suspend fun getSelectedForecast() = localSource.getSelectedForecast()
 
 }

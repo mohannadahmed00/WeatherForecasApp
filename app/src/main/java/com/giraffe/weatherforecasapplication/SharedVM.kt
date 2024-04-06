@@ -1,11 +1,14 @@
 package com.giraffe.weatherforecasapplication
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.giraffe.weatherforecasapplication.features.home.view.HomeFragment
 import com.giraffe.weatherforecasapplication.model.forecast.ForecastModel
 import com.giraffe.weatherforecasapplication.model.repo.RepoInterface
 import com.giraffe.weatherforecasapplication.utils.Constants
 import com.giraffe.weatherforecasapplication.utils.UiState
+import com.giraffe.weatherforecasapplication.utils.getAddress
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,14 +18,19 @@ import kotlinx.coroutines.launch
 
 class SharedVM(val repo: RepoInterface) : ViewModel() {
 
+    //============================states============================
     private val _language = MutableStateFlow(Constants.Languages.ENGLISH)
     val language: StateFlow<String> = _language.asStateFlow()
-
     private val _tempUnit = MutableStateFlow(Constants.TempUnits.CELSIUS)
     val tempUnit: StateFlow<String> = _tempUnit.asStateFlow()
-
     private val _windSpeedUnit = MutableStateFlow(Constants.WindSpeedUnits.METRE)
     val windSpeedUnit: StateFlow<String> = _windSpeedUnit.asStateFlow()
+    private val _favorites = MutableStateFlow<List<ForecastModel>>(emptyList())
+    val favorites: StateFlow<List<ForecastModel>> = _favorites
+    private val _selectedForecast = MutableStateFlow<UiState<ForecastModel?>>(UiState.Loading)
+    val selectedForecast: StateFlow<UiState<ForecastModel?>> = _selectedForecast.asStateFlow()
+
+    //============================events============================
     fun getLanguage() {
         viewModelScope.launch(Dispatchers.IO) {
             repo.getLanguage().collect {
@@ -30,6 +38,7 @@ class SharedVM(val repo: RepoInterface) : ViewModel() {
             }
         }
     }
+
     fun getTempUnit() {
         viewModelScope.launch(Dispatchers.IO) {
             repo.getTempUnit().collect {
@@ -37,6 +46,7 @@ class SharedVM(val repo: RepoInterface) : ViewModel() {
             }
         }
     }
+
     fun getWindSpeedUnit() {
         viewModelScope.launch(Dispatchers.IO) {
             repo.getWindSpeedUnit().collect {
@@ -44,18 +54,21 @@ class SharedVM(val repo: RepoInterface) : ViewModel() {
             }
         }
     }
+
     fun setLanguage(lang: String) {
         viewModelScope.launch {
             repo.setLanguage(lang)
             _language.emit(lang)
         }
     }
+
     fun setTempUnit(unit: String) {
         viewModelScope.launch {
             repo.setTempUnit(unit)
             _tempUnit.emit(unit)
         }
     }
+
     fun setWindSpeedUnit(unit: String) {
         viewModelScope.launch {
             repo.setWindSpeedUnit(unit)
@@ -63,69 +76,122 @@ class SharedVM(val repo: RepoInterface) : ViewModel() {
         }
     }
 
-    private val _selectedForecast = MutableStateFlow<UiState<ForecastModel?>>(UiState.Loading)
-    val selectedForecast: StateFlow<UiState<ForecastModel?>> = _selectedForecast.asStateFlow()
-    fun getForecast(lat: Double, lon: Double, isCurrent: Boolean) {
-        _selectedForecast.value = UiState.Loading
+    fun getFavorites() {
         viewModelScope.launch(Dispatchers.IO) {
-            repo.getForecast(lat, lon, isCurrent)
+            repo.getFavorites()
+                .collect {
+                    Log.d(
+                        HomeFragment.TAG,
+                        "getFavorites (shared viewmodel): (size = ${it.size}) ${it.map { it.timezone }}"
+                    )
+                    _favorites.emit(it.sortedBy { item -> item.timezone })
+                }
+        }
+    }
+
+    fun insertFavorite(forecast: ForecastModel) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.insertFavorite(forecast)
+            getFavorites()
+            setSelectedForecast(forecast)
+
+        }
+    }
+
+    fun justInsertFavorite(forecast: ForecastModel) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.insertFavorite(forecast)
+            getFavorites()
+        }
+    }
+
+    fun deleteFavorite(forecast: ForecastModel) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.deleteFavorite(forecast.timezone)
+            getFavorites()
+            setSelectedForecast(forecast)
+        }
+    }
+
+    fun justDeleteFavorite(forecast: ForecastModel) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.deleteFavorite(forecast.timezone)
+            getFavorites()
+            //setSelectedForecast(forecast)
+        }
+    }
+
+    fun getSelectedForecast() {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            //_selectedForecast.emit(UiState.Loading)
+            repo.getSelectedForecast()
                 .catch {
+                    //Log.e(HomeFragment.TAG, "SharedVM: getSelectedForecast: ${it.message}")
                     _selectedForecast.emit(UiState.Fail(it.message ?: "unknown error"))
                 }
                 .collect {
-                    _selectedForecast.emit(it)
+
+                    if (it != null) {
+                        Log.d(
+                            HomeFragment.TAG,
+                            "getSelectedForecast (shared viewmodel): ${it.isFavorite} (it)=>${it.timezone}"
+                        )
+                        val s = it
+                        s.isFavorite = isExistInFavorites(it)
+                        Log.d(
+                            HomeFragment.TAG,
+                            "getSelectedForecast (shared viewmodel): ${s.isFavorite} (s)=>${s.timezone}"
+                        )
+                        _selectedForecast.emit(UiState.Success(s))
+                    } else {
+                        _selectedForecast.emit(UiState.Fail("not location has been selected"))
+                    }
                 }
         }
     }
 
-    private val _favorites = MutableStateFlow<UiState<List<ForecastModel>>>(UiState.Loading)
-    val favorites: StateFlow<UiState<List<ForecastModel>>> = _favorites
-    fun getFavorites(){
-        _favorites.value = UiState.Loading
+    private fun isExistInFavorites(forecast: ForecastModel) = favorites.value.any {
+        it.timezone == forecast.timezone
+    }
+
+    fun setSelectedForecast(forecast: ForecastModel) {
         viewModelScope.launch(Dispatchers.IO) {
-            repo.getAllFavorites()
-                .catch { _favorites.emit(UiState.Fail(it.message ?: "unknown error")) }
-                .collect {
-                    _favorites.emit(it)
-                }
+            repo.setSelectedForecast(forecast)
+            getSelectedForecast()
         }
     }
 
-
-
-    private val _insert = MutableStateFlow<UiState<Long>>(UiState.Loading)
-    val insert: StateFlow<UiState<Long>> = _insert.asStateFlow()
-    fun insertForecast(forecast: ForecastModel) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.insertForecast(forecast)
-                .catch { emit(UiState.Fail(it.message ?: "unknown error")) }
-                .collect {
-                    _insert.emit(it)
-                }
+    fun del() {
+        viewModelScope.launch {
+            repo.deleteFavorites()
         }
     }
+    //============================fix area============================
 
-    private val _delete = MutableStateFlow<UiState<Int>>(UiState.Loading)
-    val delete: StateFlow<UiState<Int>> = _delete.asStateFlow()
-    fun deleteForecast(forecast: ForecastModel) {
+
+    fun getForecast(lat: Double, lon: Double) {
         viewModelScope.launch(Dispatchers.IO) {
-            repo.deleteForecast(forecast)
-                .catch { emit(UiState.Fail(it.message ?: "unknown error")) }
+            _selectedForecast.emit(UiState.Loading)
+            repo.getForecast(lat, lon)
+                .catch {
+                    //Log.e(HomeFragment.TAG, "getForecast: ${it.message}")
+                }
                 .collect {
-                    _delete.emit(it)
+                    it?.let { forecast ->
+
+                        setSelectedForecast(forecast)
+                    }
                 }
         }
     }
 
 
     //===============================================================old===================================
-    fun selectForecast(forecast: ForecastModel?) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _selectedForecast.emit(UiState.Success(forecast))
-        }
-    }
+
     fun selectLocation(lat: Double, lon: Double) {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        /*viewModelScope.launch(Dispatchers.IO) {
             repo.getForecast(lat, lon, false)
                 .catch { }
                 .collect {
@@ -144,6 +210,6 @@ class SharedVM(val repo: RepoInterface) : ViewModel() {
                     }
                 }
             //_selectedLocation.emit(Pair(lat,lon))
-        }
+        }*/
     }
 }
